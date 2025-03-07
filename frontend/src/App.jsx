@@ -1,12 +1,83 @@
-import React from "react";
-import { Button } from "./components/ui/button";
+import React, { useEffect, useState } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import {
+  Home,
+  Layout,
+  Login,
+  NotFound,
+  ProtectedRoute,
+  Signup,
+} from "./routes";
+import { Toaster } from "react-hot-toast";
+import { useSelector } from "react-redux";
+import { ScrollToTop } from "./components";
+import { Dialog, DialogContent } from "./components/ui/dialog";
+import { WifiOffIcon } from "lucide-react";
 
 const App = () => {
+  const { user } = useSelector((state) => state.user);
+
+  const [isOnline, setIsOnline] = useState(true);
+  const updateNetworkStatus = () => {
+    setIsOnline(navigator.onLine);
+  };
+
+  useEffect(() => {
+    window.addEventListener("load", updateNetworkStatus);
+    window.addEventListener("online", updateNetworkStatus);
+    window.addEventListener("offline", updateNetworkStatus);
+
+    return () => {
+      window.removeEventListener("load", updateNetworkStatus);
+      window.removeEventListener("online", updateNetworkStatus);
+      window.removeEventListener("offline", updateNetworkStatus);
+    };
+  }, [navigator.onLine]);
   return (
-    <div>
-      <Button>Hello World</Button>
-      <h1 className="text-3xl font-bold text-blue-500">Hello World</h1>
-    </div>
+    <>
+      {isOnline ? (
+        <Router>
+          <ScrollToTop />
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              {/* All routes with same layout */}
+              <Route index element={<ProtectedRoute children={<Home />} />} />
+            </Route>
+
+            {/* Login Signup Routes */}
+            <Route
+              path="/login"
+              element={user ? <Navigate to="/" /> : <Login />}
+            />
+            <Route
+              path="/signup"
+              element={user ? <Navigate to="/" /> : <Signup />}
+            />
+
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
+      ) : (
+        <>
+          <Dialog open={open}>
+            <DialogContent>
+              <div className="flex flex-col items-center justify-center">
+                <WifiOffIcon className="w-20 h-20" />
+                <p className="text-center text-2xl">
+                  It seems like you are offline
+                </p>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </>
+      )}
+      <Toaster position="bottom-right" reverseOrder={false} />
+    </>
   );
 };
 

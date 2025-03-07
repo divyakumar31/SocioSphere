@@ -1,0 +1,42 @@
+{
+  "name": "sociosphere",
+  "version": "1.0.0",
+  "description": "Socio Sphere is a webapp like instagram, facebook and X where you can make friends and share your circle.SocioSphere is a social media platform that allows users to connect with their friends and family, share their thoughts and ideas, and engage in conversations with other users.",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  },
+  "keywords": [
+    "SocioSphere",
+    "Social Media",
+    "Social Network",
+    "Social Media Platform",
+    "Social Network Platform",
+    "Social Media Application",
+    "Social Network Application",
+    "Social Media App",
+    "Social Network App",
+    "Social Media Platform"
+  ],
+  "author": "Divyakumar Patel",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cloudinary": "^2.4.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.5.2",
+    "multer": "^1.4.5-lts.1",
+    "sharp": "^0.33.4",
+    "sociosphere": "file:",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4",
+    "prettier": "^3.4.2"
+  }
+}

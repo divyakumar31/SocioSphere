@@ -32,7 +32,6 @@ const Login = () => {
       setIsLoading(true);
       try {
         const res = await loginUserApi(user);
-        console.log(res.data.message);
         if (res.data.success) {
           toast.success(res.data.message);
           dispatch(loginUser(res.data.data));

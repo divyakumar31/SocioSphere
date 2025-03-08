@@ -37,16 +37,16 @@ const Signup = () => {
       setIsLoading(true);
       try {
         const res = await registerUserApi(user);
-        console.log(res.data.message);
-        toast.success(res.data.message);
-        console.log(res.data.data);
-        dispatch(loginUser(res.data.data));
-        setUser({
-          username: "",
-          email: "",
-          password: "",
-        });
-        navigate("/");
+        if (res.data.success) {
+          toast.success(res.data.message);
+          dispatch(loginUser(res.data.data));
+          setUser({
+            username: "",
+            email: "",
+            password: "",
+          });
+          navigate("/");
+        }
       } catch (error) {
         toast.error(
           error.response?.data.message || "Check your internet connection"

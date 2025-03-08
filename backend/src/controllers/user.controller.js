@@ -2,6 +2,7 @@ import asyncHandler from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 /**
  * Sign up a user and generates an access token.
@@ -150,4 +151,49 @@ const logoutUser = asyncHandler(async (_, res) => {
   }
 });
 
-export { createUser, loginUser, logoutUser };
+/**
+ * Updates user profile.
+ * @route POST /api/v1/user/update
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Object} - User object with updated profile.
+ * @throws {ApiError} - If unable to update profile.
+ */
+const updateProfile = asyncHandler(async (req, res) => {
+  try {
+    const { bio, gender, name, email, profileType } = req.body;
+    const avatarLocalPath = req.file?.path;
+
+    let avatar;
+    if (avatarLocalPath) {
+      avatar = await uploadOnCloudinary(avatarLocalPath);
+      if (!avatar.url) {
+        throw new ApiError(400, "Error while uploading on avatar");
+      }
+    }
+
+    const user = await User.findById(req.user._id).select("-password");
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+    if (bio) user.bio = bio;
+    if (gender !== "undefined") user.gender = gender;
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (profileType !== "undefined") user.profileType = profileType;
+    if (avatar?.url) user.profilePicture = avatar.url;
+
+    await user.save();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Profile updated successfully", user));
+  } catch (error) {
+    throw new ApiError(
+      error?.statusCode || 500,
+      error?.message || "Something went wrong while updating profile"
+    );
+  }
+});
+
+export { createUser, loginUser, logoutUser, updateProfile };

@@ -20,4 +20,20 @@ const logoutUserApi = () => {
   return apiClient.post("/user/logout");
 };
 
-export { loginUserApi, registerUserApi, logoutUserApi };
+const updateUserApi = (data, profilePicture) => {
+  const formData = new FormData();
+  if (profilePicture) {
+    formData.append("profilePicture", profilePicture);
+  }
+  formData.append("bio", data.bio?.trim());
+  formData.append("name", data.name?.trim());
+  formData.append("email", data.email?.trim());
+  formData.append("gender", data.gender);
+  formData.append("profileType", data.profileType);
+
+  return apiClient.post("/user/update", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+export { loginUserApi, registerUserApi, logoutUserApi, updateUserApi };

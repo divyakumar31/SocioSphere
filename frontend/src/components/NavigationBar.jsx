@@ -56,7 +56,7 @@ const navItems = [
     path: "/profile",
     icon: (userImage) => (
       <Avatar className={"w-6 h-6"}>
-        <AvatarImage src={userImage} />
+        <AvatarImage src={userImage} className={"object-cover"} />
         <AvatarFallback>SS</AvatarFallback>
       </Avatar>
     ),
@@ -209,6 +209,8 @@ const NavigationBar = () => {
           >
             <AvatarImage
               src={user?.profilePicture || "/assets/default_img.jpg"}
+              alt={`${user?.name}'s profile picture`}
+              className={"object-cover"}
             />
             <AvatarFallback>SS</AvatarFallback>
           </Avatar>

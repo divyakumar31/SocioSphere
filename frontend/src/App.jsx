@@ -6,6 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import {
+  EditProfile,
   Home,
   Layout,
   Login,
@@ -47,6 +48,12 @@ const App = () => {
             <Route path="/" element={<Layout />}>
               {/* All routes with same layout */}
               <Route index element={<ProtectedRoute children={<Home />} />} />
+
+              {/* Edit Profile */}
+              <Route
+                path="e/profile"
+                element={<ProtectedRoute children={<EditProfile />} />}
+              />
             </Route>
 
             {/* Login Signup Routes */}

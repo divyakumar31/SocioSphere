@@ -36,4 +36,20 @@ const updateUserApi = (data, profilePicture) => {
   });
 };
 
-export { loginUserApi, registerUserApi, logoutUserApi, updateUserApi };
+const addPostApi = (data, postImage) => {
+  const formData = new FormData();
+  formData.append("postImage", postImage);
+  formData.append("caption", data);
+
+  return apiClient.post("/post/create", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+export {
+  loginUserApi,
+  registerUserApi,
+  logoutUserApi,
+  updateUserApi,
+  addPostApi,
+};

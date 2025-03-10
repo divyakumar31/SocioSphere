@@ -1,7 +1,7 @@
-import asyncHandler from "../utils/asyncHandler.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import asyncHandler from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 /**
@@ -181,7 +181,10 @@ const updateProfile = asyncHandler(async (req, res) => {
     if (name) user.name = name;
     if (email) user.email = email;
     if (profileType !== "undefined") user.profileType = profileType;
-    if (avatar?.url) user.profilePicture = avatar.url;
+    if (avatar?.url) {
+      if (user.profilePicture) await deleteOnCloudinary(user?.profilePicture); // remove old profilepicture
+      user.profilePicture = avatar.url; // add new picture
+    }
 
     await user.save();
 

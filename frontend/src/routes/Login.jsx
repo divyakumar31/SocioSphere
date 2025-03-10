@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { loginUserApi } from "@/api";
+import { Loader2Icon } from "lucide-react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { loginUserApi } from "@/api";
-import { loginUser } from "../features/userSlice";
-import { Loader2Icon } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { addUser } from "../features/userSlice";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -34,7 +34,7 @@ const Login = () => {
         const res = await loginUserApi(user);
         if (res.data.success) {
           toast.success(res.data.message);
-          dispatch(loginUser(res.data.data));
+          dispatch(addUser(res.data.data));
           setUser({
             username: "",
             password: "",

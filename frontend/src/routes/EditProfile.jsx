@@ -1,10 +1,9 @@
 import { updateUserApi } from "@/api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { loginUser } from "@/features/userSlice";
-import axios from "axios";
+import { addUser } from "@/features/userSlice";
 import { Loader2Icon } from "lucide-react";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -51,7 +50,7 @@ const EditProfile = () => {
 
         if (res.data.success) {
           toast.success(res.data.message);
-          dispatch(loginUser(res.data.data));
+          dispatch(addUser(res.data.data));
         }
       } catch (error) {
         console.log(error);

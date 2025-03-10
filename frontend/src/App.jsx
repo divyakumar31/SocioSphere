@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from "react";
+import { WifiOffIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Toaster } from "react-hot-toast";
+import { useSelector } from "react-redux";
 import {
+  Navigate,
+  Route,
   BrowserRouter as Router,
   Routes,
-  Route,
-  Navigate,
 } from "react-router-dom";
+import { ScrollToTop } from "./components";
+import { Dialog, DialogContent } from "./components/ui/dialog";
 import {
   EditProfile,
   Home,
@@ -14,11 +19,6 @@ import {
   ProtectedRoute,
   Signup,
 } from "./routes";
-import { Toaster } from "react-hot-toast";
-import { useSelector } from "react-redux";
-import { ScrollToTop } from "./components";
-import { Dialog, DialogContent } from "./components/ui/dialog";
-import { WifiOffIcon } from "lucide-react";
 
 const App = () => {
   const { user } = useSelector((state) => state.user);

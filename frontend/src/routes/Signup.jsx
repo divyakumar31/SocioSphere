@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { registerUserApi } from "@/api";
+import { Loader2Icon } from "lucide-react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { loginUser } from "../features/userSlice.js";
-import { Loader2Icon } from "lucide-react";
-import { registerUserApi } from "@/api";
+import { Link, useNavigate } from "react-router-dom";
+import { addUser } from "../features/userSlice.js";
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -39,7 +39,7 @@ const Signup = () => {
         const res = await registerUserApi(user);
         if (res.data.success) {
           toast.success(res.data.message);
-          dispatch(loginUser(res.data.data));
+          dispatch(addUser(res.data.data));
           setUser({
             username: "",
             email: "",

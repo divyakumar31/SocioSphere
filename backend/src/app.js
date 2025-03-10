@@ -1,7 +1,7 @@
-import express from "express";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
-import cookieParser from "cookie-parser";
+import express from "express";
 import { errorHandler } from "./utils/ApiError.js";
 
 dotenv.config({ path: "./.env" });
@@ -21,9 +21,11 @@ app.use(cookieParser());
 
 // routes imports
 import userRoutes from "./routes/user.routes.js";
+import postRoutes from "./routes/post.routes.js";
 
 // routes declaration
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/post", postRoutes);
 
 // Routes
 app.get("/api/v1/healthcheck", (_, res) => {

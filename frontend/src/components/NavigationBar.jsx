@@ -1,3 +1,5 @@
+import { logoutUserApi } from "@/api";
+import { removeUser } from "@/features/userSlice";
 import {
   CompassIcon,
   HeartIcon,
@@ -9,13 +11,13 @@ import {
   SettingsIcon,
   SquarePlusIcon,
 } from "lucide-react";
-import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { useDispatch, useSelector } from "react-redux";
-import { logoutUserApi } from "@/api";
-import { logoutUser } from "@/features/userSlice";
+import { useState } from "react";
 import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { NavLink, useNavigate } from "react-router-dom";
+import { CreatePost } from ".";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Create } from "@/routes";
 
 const navItems = [
   {
@@ -74,15 +76,17 @@ const navItems = [
 ];
 
 const NavigationBar = () => {
+  const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [isCreatePostModelOpen, setIsCreatePostModelOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
       const res = await logoutUserApi();
       if (res.data.success) {
         toast.success(res.data.message);
-        dispatch(logoutUser());
+        dispatch(removeUser());
         navigate("/login");
       }
     } catch (error) {
@@ -96,12 +100,15 @@ const NavigationBar = () => {
     e.preventDefault();
     if (item.name === "Logout") {
       handleLogout();
+    } else if (item.name === "Profile" || item.name === "Home") {
+      navigate(item.path);
+    } else if (item.name === "Create") {
+      setIsCreatePostModelOpen(true);
     } else {
       console.log("CLicked", item);
     }
   };
 
-  const { user } = useSelector((state) => state.user);
   return (
     <>
       {/* NavBar for md and above */}
@@ -216,6 +223,9 @@ const NavigationBar = () => {
           </Avatar>
         </div>
       </div>
+      {isCreatePostModelOpen && (
+        <Create setIsCreatePostModelOpen={setIsCreatePostModelOpen} />
+      )}
     </>
   );
 };

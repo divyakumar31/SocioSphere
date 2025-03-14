@@ -18,6 +18,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { CreatePost } from ".";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Create } from "@/routes";
+import { removePosts } from "@/features/postSlice";
 
 const navItems = [
   {
@@ -87,6 +88,7 @@ const NavigationBar = () => {
       if (res.data.success) {
         toast.success(res.data.message);
         dispatch(removeUser());
+        dispatch(removePosts());
         navigate("/login");
       }
     } catch (error) {

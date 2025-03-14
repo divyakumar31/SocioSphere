@@ -1,12 +1,10 @@
-import { useSelector } from "react-redux";
+import { PostFeed, SuggestionsBar } from "@/components";
 
 const Home = () => {
-  const { user } = useSelector((state) => state.user);
-
   return (
-    <div className="h-screen overflow-scroll scrollbar-none">
-      <h1>Home</h1>
-      <p>{user.username}</p>
+    <div className="h-screen overflow-scroll scrollbar-none flex p-2 xsm:p-4">
+      <PostFeed />
+      <SuggestionsBar />
     </div>
   );
 };

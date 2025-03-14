@@ -8,6 +8,7 @@ const apiClient = axios.create({
 
 // API functions for different actions
 
+// USER APIs
 const loginUserApi = (data) => {
   return apiClient.post("/user/login", data);
 };
@@ -36,6 +37,11 @@ const updateUserApi = (data, profilePicture) => {
   });
 };
 
+const getSuggestedUsersApi = () => {
+  return apiClient.get("/user/suggest");
+};
+
+// POST APIs
 const addPostApi = (data, postImage) => {
   const formData = new FormData();
   formData.append("postImage", postImage);
@@ -46,10 +52,32 @@ const addPostApi = (data, postImage) => {
   });
 };
 
+const getAllPostsApi = () => {
+  return apiClient.get("/post");
+};
+
+const likeDislikePostApi = (liked, postId) => {
+  return apiClient.post(`/post/${liked}/${postId}`, {});
+};
+
+const deletePostApi = (postId) => {
+  return apiClient.delete(`/post/${postId}`);
+};
+
+// COMMENT APIs
+const addCommentApi = (userComment, postId) => {
+  return apiClient.post(`/comment/add/${postId}`, { text: userComment });
+};
+
 export {
-  loginUserApi,
-  registerUserApi,
-  logoutUserApi,
-  updateUserApi,
   addPostApi,
+  getAllPostsApi,
+  getSuggestedUsersApi,
+  likeDislikePostApi,
+  loginUserApi,
+  logoutUserApi,
+  registerUserApi,
+  updateUserApi,
+  addCommentApi,
+  deletePostApi,
 };

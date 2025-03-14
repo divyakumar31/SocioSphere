@@ -199,4 +199,35 @@ const updateProfile = asyncHandler(async (req, res) => {
   }
 });
 
-export { createUser, loginUser, logoutUser, updateProfile };
+/**
+ * Updates user profile.
+ * @route GET /api/v1/user/suggest
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Object} - Array of Suggested Users.
+ * @throws {ApiError} - If unable to fetch suggested profiles.
+ */
+const suggestUser = asyncHandler(async (req, res) => {
+  try {
+    const users = await User.find({ _id: { $ne: req.user._id } }).select(
+      "_id username profilePicture name"
+    );
+    if (!users) {
+      throw new ApiError(404, "Users not found to suggest");
+    }
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Suggested users fetched successfully", users)
+      );
+  } catch (error) {
+    console.error(error);
+    throw new ApiError(
+      error?.statusCode || 500,
+      error?.message || "Something went wrong while fetching suggested users"
+    );
+  }
+});
+
+export { createUser, loginUser, logoutUser, updateProfile, suggestUser };

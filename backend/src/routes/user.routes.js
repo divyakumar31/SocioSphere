@@ -3,6 +3,7 @@ import {
   createUser,
   loginUser,
   logoutUser,
+  suggestUser,
   updateProfile,
 } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -18,5 +19,8 @@ router.route("/logout").post(verifyJWT, logoutUser);
 router
   .route("/update")
   .post(verifyJWT, upload.single("profilePicture"), updateProfile);
+
+// To get suggested users
+router.route("/suggest").get(verifyJWT, suggestUser);
 
 export default router;

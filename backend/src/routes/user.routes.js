@@ -1,6 +1,7 @@
 import Router from "express";
 import {
   createUser,
+  getUserProfile,
   loginUser,
   logoutUser,
   suggestUser,
@@ -22,5 +23,8 @@ router
 
 // To get suggested users
 router.route("/suggest").get(verifyJWT, suggestUser);
+
+// Get User Profile
+router.route("/:username").get(getUserProfile);
 
 export default router;

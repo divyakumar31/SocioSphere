@@ -41,6 +41,10 @@ const getSuggestedUsersApi = () => {
   return apiClient.get("/user/suggest");
 };
 
+const getUserProfileApi = (username) => {
+  return apiClient.get(`/user/${username}`);
+};
+
 // POST APIs
 const addPostApi = (data, postImage) => {
   const formData = new FormData();
@@ -70,14 +74,15 @@ const addCommentApi = (userComment, postId) => {
 };
 
 export {
+  addCommentApi,
   addPostApi,
+  deletePostApi,
   getAllPostsApi,
   getSuggestedUsersApi,
+  getUserProfileApi,
   likeDislikePostApi,
   loginUserApi,
   logoutUserApi,
   registerUserApi,
   updateUserApi,
-  addCommentApi,
-  deletePostApi,
 };

@@ -230,4 +230,36 @@ const suggestUser = asyncHandler(async (req, res) => {
   }
 });
 
-export { createUser, loginUser, logoutUser, updateProfile, suggestUser };
+const getUserProfile = asyncHandler(async (req, res) => {
+  try {
+    const { username } = req.params;
+    const user = await User.findOne({ username })
+      .select("-password -email -savedPosts -createdAt -updatedAt -__v")
+      .populate({
+        path: "posts",
+        select: "caption image likes comments",
+      });
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Profile fetched successfully", user));
+  } catch (error) {
+    console.error(error);
+    throw new ApiError(
+      error?.statusCode || 500,
+      error?.message || "Something went wrong while fetching user profile"
+    );
+  }
+});
+
+export {
+  createUser,
+  loginUser,
+  logoutUser,
+  updateProfile,
+  suggestUser,
+  getUserProfile,
+};

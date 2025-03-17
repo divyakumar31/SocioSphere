@@ -16,6 +16,7 @@ import {
   Layout,
   Login,
   NotFound,
+  Profile,
   ProtectedRoute,
   Signup,
 } from "./routes";
@@ -54,6 +55,12 @@ const App = () => {
                 path="e/profile"
                 element={<ProtectedRoute children={<EditProfile />} />}
               />
+
+              {/* Any User Profile */}
+              <Route
+                path=":username"
+                element={<ProtectedRoute children={<Profile />} />}
+              />
             </Route>
 
             {/* Login Signup Routes */}
@@ -66,6 +73,7 @@ const App = () => {
               element={user ? <Navigate to="/" /> : <Signup />}
             />
 
+            <Route path="/404" element={<NotFound />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>

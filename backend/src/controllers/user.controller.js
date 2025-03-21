@@ -255,11 +255,47 @@ const getUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
+const followOrUnfollowUser = asyncHandler(async (req, res) => {
+  try {
+    const userToFollow = await User.findById(req.params.id);
+    const user = await User.findById(req.user._id);
+    if (!user || !userToFollow) {
+      throw new ApiError(404, "User not found");
+    }
+    if (req.params.id == req.user._id) {
+      throw new ApiError(400, "You can't follow yourself");
+    }
+    if (user.following.includes(userToFollow._id)) {
+      userToFollow.followers.pull(user._id);
+      user.following.pull(userToFollow._id);
+      await userToFollow.save({ validateBeforeSave: false });
+      await user.save({ validateBeforeSave: false });
+      return res
+        .status(200)
+        .json(new ApiResponse(200, "User unfollowed successfully"));
+    } else {
+      userToFollow.followers.push(user._id);
+      user.following.push(userToFollow._id);
+      await userToFollow.save({ validateBeforeSave: false });
+      await user.save({ validateBeforeSave: false });
+      return res
+        .status(200)
+        .json(new ApiResponse(200, "User followed successfully"));
+    }
+  } catch (error) {
+    throw new ApiError(
+      error?.statusCode || 500,
+      error?.message || "Something went wrong while following/unfollowing user"
+    );
+  }
+});
+
 export {
   createUser,
+  followOrUnfollowUser,
+  getUserProfile,
   loginUser,
   logoutUser,
-  updateProfile,
   suggestUser,
-  getUserProfile,
+  updateProfile,
 };

@@ -63,6 +63,14 @@ const App = () => {
               />
             </Route>
 
+            {/* Chat Routes */}
+            <Route
+              path="/inbox/"
+              element={<ProtectedRoute children={<Layout />} />}
+            >
+              <Route path=":id" element={<ProtectedRoute children={"Hey"} />} />
+            </Route>
+
             {/* Login Signup Routes */}
             <Route
               path="/login"

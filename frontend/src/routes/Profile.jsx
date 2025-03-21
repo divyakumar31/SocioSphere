@@ -1,9 +1,11 @@
-import { getUserProfileApi } from "@/api";
+import { followUnfollowApi, getUserProfileApi } from "@/api";
 import { ProfilePostImage } from "@/components";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { addUser } from "@/features/userSlice";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 
 const Profile = () => {
@@ -14,6 +16,7 @@ const Profile = () => {
   const [showContent, setShowContent] = useState("Posts");
   const [profileUser, setProfileUser] = useState({});
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const getProfileUserDetails = async () => {
     if (username === user.username || username === "profile") {
@@ -30,7 +33,7 @@ const Profile = () => {
           document.title = `${res.data.data.username}'s profile`;
         }
       } catch (error) {
-        navigate("/404");
+        navigate("/404", { replace: true });
         toast.error(
           error.response?.data.message || "Check your internet connection"
         );
@@ -43,6 +46,53 @@ const Profile = () => {
     getProfileUserDetails();
   }, [username]);
 
+  const handleShareProfile = () => {
+    try {
+      navigator.clipboard.writeText(
+        `${import.meta.env.VITE_BASE_URL}/${profileUser.username}?shid=${
+          user._id
+        }`
+      );
+      toast.success("Link copied to clipboard");
+    } catch (error) {
+      toast.error("Unable to copy link");
+    }
+  };
+
+  const handleFollowUnfollow = async () => {
+    try {
+      const res = await followUnfollowApi(profileUser._id);
+      if (res.data.success) {
+        console.log(res.data);
+        let updatedUser;
+        if (profileUser.followers.includes(user._id)) {
+          setProfileUser({
+            ...profileUser,
+            followers: profileUser.followers.filter((fid) => fid !== user._id),
+          });
+          updatedUser = {
+            ...user,
+            following: user.following.filter((fid) => fid !== profileUser._id),
+          };
+        } else {
+          setProfileUser({
+            ...profileUser,
+            followers: [user._id, ...profileUser.followers],
+          });
+          updatedUser = {
+            ...user,
+            following: [profileUser._id, ...user.following],
+          };
+        }
+        dispatch(addUser(updatedUser));
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data.message);
+    }
+  };
+
   const ProfileActions = () => {
     return (
       <>
@@ -53,6 +103,7 @@ const Profile = () => {
               className={
                 "bg-transparent shadow border hover:bg-gray-100 cursor-pointer px-8"
               }
+              onClick={() => navigate("/e/profile")}
             >
               Edit Profile
             </Button>
@@ -61,6 +112,7 @@ const Profile = () => {
               className={
                 "bg-transparent shadow border hover:bg-gray-100 cursor-pointer px-8"
               }
+              onClick={handleShareProfile}
             >
               Share Profile
             </Button>
@@ -74,6 +126,7 @@ const Profile = () => {
                   className={
                     "bg-blue-500 hover:bg-blue-600 cursor-pointer px-8 text-white"
                   }
+                  onClick={handleFollowUnfollow}
                 >
                   Unfollow
                 </Button>
@@ -82,6 +135,7 @@ const Profile = () => {
                   className={
                     "bg-transparent shadow border hover:bg-gray-100 cursor-pointer px-8"
                   }
+                  onClick={() => navigate(`/inbox/${profileUser._id}`)}
                 >
                   Message
                 </Button>
@@ -92,6 +146,7 @@ const Profile = () => {
                 className={
                   "bg-blue-500 hover:bg-blue-600 cursor-pointer px-8 text-white"
                 }
+                onClick={handleFollowUnfollow}
               >
                 Follow
               </Button>
@@ -106,11 +161,11 @@ const Profile = () => {
     <>
       <div className="w-full h-screen overflow-scroll scrollbar-none p-2 xsm:p-4">
         <div className="max-w-3xl m-auto">
-          <div className="flex gap-4">
+          <div className="flex gap-4 mb-2">
             {/* Profile User Image */}
             <Avatar className={"w-24 h-24 xsm:w-40 xsm:h-40"}>
               <AvatarImage
-                src={profileUser.profilePicture || "default_img.jpg"}
+                src={profileUser.profilePicture || "/assets/default_img.jpg"}
                 alt={`${
                   profileUser.name || profileUser.username
                 }'s profile picture`}

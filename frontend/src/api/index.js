@@ -45,6 +45,10 @@ const getUserProfileApi = (username) => {
   return apiClient.get(`/user/${username}`);
 };
 
+const followUnfollowApi = (profileUserId) => {
+  return apiClient.post(`/user/follow-unfollow/${profileUserId}`, {});
+};
+
 // POST APIs
 const addPostApi = (data, postImage) => {
   const formData = new FormData();
@@ -77,6 +81,7 @@ export {
   addCommentApi,
   addPostApi,
   deletePostApi,
+  followUnfollowApi,
   getAllPostsApi,
   getSuggestedUsersApi,
   getUserProfileApi,

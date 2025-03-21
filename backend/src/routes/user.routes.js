@@ -1,6 +1,7 @@
 import Router from "express";
 import {
   createUser,
+  followOrUnfollowUser,
   getUserProfile,
   loginUser,
   logoutUser,
@@ -26,5 +27,8 @@ router.route("/suggest").get(verifyJWT, suggestUser);
 
 // Get User Profile
 router.route("/:username").get(getUserProfile);
+
+// To follow and unfollow users
+router.route("/follow-unfollow/:id").post(verifyJWT, followOrUnfollowUser);
 
 export default router;

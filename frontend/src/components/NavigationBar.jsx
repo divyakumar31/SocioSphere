@@ -102,7 +102,12 @@ const NavigationBar = () => {
     e.preventDefault();
     if (item.name === "Logout") {
       handleLogout();
-    } else if (item.name === "Profile" || item.name === "Home") {
+    } else if (
+      item.name === "Profile" ||
+      item.name === "Home" ||
+      item.name === "Explore" ||
+      item.name === "Message"
+    ) {
       navigate(item.path);
     } else if (item.name === "Create") {
       setIsCreatePostModelOpen(true);

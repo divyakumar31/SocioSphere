@@ -12,6 +12,7 @@ import { ScrollToTop } from "./components";
 import { Dialog, DialogContent } from "./components/ui/dialog";
 import {
   EditProfile,
+  Explore,
   Home,
   Layout,
   Login,
@@ -50,6 +51,11 @@ const App = () => {
               {/* All routes with same layout */}
               <Route index element={<ProtectedRoute children={<Home />} />} />
 
+              {/* Explore Tab */}
+              <Route
+                path="explore"
+                element={<ProtectedRoute children={<Explore />} />}
+              />
               {/* Edit Profile */}
               <Route
                 path="e/profile"

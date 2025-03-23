@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 
 const Profile = () => {
-  // TODO: Handle Action buttons
+  // TODO: Handle Action buttons, Change Saved posts as it currently shows user poss
   const { username } = useParams();
   const { user } = useSelector((state) => state.user);
   const userPosts = useSelector((state) => state.post.post);
@@ -256,7 +256,7 @@ const Profile = () => {
           {/* User Posts */}
           {showContent === "Posts" && (
             <>
-              <div className="xsm:p-4 flex flex-wrap gap-2">
+              <div className="xsm:p-4 grid grid-cols-2 lg:grid-cols-3 gap-2">
                 {profileUser.posts?.map((post) => (
                   <ProfilePostImage
                     key={post._id}
@@ -284,7 +284,7 @@ const Profile = () => {
           {/* user Saved Posts */}
           {showContent === "Saved" && (
             <>
-              <div className="xsm:p-4 flex flex-wrap gap-2">
+              <div className="xsm:p-4 grid grid-cols-2 lg:grid-cols-3 gap-2">
                 {profileUser.posts?.map((post) => (
                   <ProfilePostImage
                     key={post._id}

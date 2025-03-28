@@ -1,5 +1,4 @@
 import { WifiOffIcon } from "lucide-react";
-import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { useSelector } from "react-redux";
 import {
@@ -10,6 +9,7 @@ import {
 } from "react-router-dom";
 import { ScrollToTop } from "./components";
 import { Dialog, DialogContent } from "./components/ui/dialog";
+import { useOnlineStatus } from "./lib/useOnlineStatus";
 import {
   EditProfile,
   Explore,
@@ -20,27 +20,13 @@ import {
   Profile,
   ProtectedRoute,
   Signup,
+  SinglePost,
 } from "./routes";
 
 const App = () => {
   const { user } = useSelector((state) => state.user);
 
-  const [isOnline, setIsOnline] = useState(true);
-  const updateNetworkStatus = () => {
-    setIsOnline(navigator.onLine);
-  };
-
-  useEffect(() => {
-    window.addEventListener("load", updateNetworkStatus);
-    window.addEventListener("online", updateNetworkStatus);
-    window.addEventListener("offline", updateNetworkStatus);
-
-    return () => {
-      window.removeEventListener("load", updateNetworkStatus);
-      window.removeEventListener("online", updateNetworkStatus);
-      window.removeEventListener("offline", updateNetworkStatus);
-    };
-  }, [navigator.onLine]);
+  const isOnline = useOnlineStatus();
   return (
     <>
       {isOnline ? (
@@ -56,6 +42,13 @@ const App = () => {
                 path="explore"
                 element={<ProtectedRoute children={<Explore />} />}
               />
+
+              {/* Explore Single Post */}
+              <Route
+                path="p/:id"
+                element={<ProtectedRoute children={<SinglePost />} />}
+              />
+
               {/* Edit Profile */}
               <Route
                 path="e/profile"

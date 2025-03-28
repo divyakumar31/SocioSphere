@@ -107,6 +107,12 @@ const Post = ({ post }) => {
     }
   };
 
+  const handlePostShare = () => {
+    navigator.clipboard.writeText(
+      `${import.meta.env.VITE_BASE_URL}/p/${post._id}?shid=${user._id}`
+    );
+    toast.success("Copied to clipboard");
+  };
   return (
     <>
       <div className="max-w-lg w-full border-b border-b-gray-500 mb-2">
@@ -196,7 +202,7 @@ const Post = ({ post }) => {
                 setCommentSection(true);
               }}
             />
-            <Send className="cursor-pointer" />
+            <Send className="cursor-pointer" onClick={handlePostShare} />
           </div>
           <div>
             {bookmarked ? (

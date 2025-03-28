@@ -28,6 +28,14 @@ export const postSlice = createSlice({
         postToComment.comments.unshift(action.payload.comment);
       }
     },
+    setComments: (state, action) => {
+      const postToComment = state.post.find(
+        (p) => p._id === action.payload.postId
+      );
+      if (postToComment) {
+        postToComment.comments = action.payload.comments;
+      }
+    },
     deletePost: (state, action) => {
       const index = state.post.findIndex((p) => p._id === action.payload);
       if (index !== -1) {
@@ -61,6 +69,7 @@ export const postSlice = createSlice({
 
 export const {
   addAllPosts,
+  setComments,
   removePosts,
   addPost,
   addComment,

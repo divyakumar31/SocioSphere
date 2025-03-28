@@ -311,4 +311,54 @@ const dislikePost = asyncHandler(async (req, res) => {
   }
 });
 
-export { createPost, deletePost, dislikePost, getAllPosts, likePost };
+/**
+ * Fetch post based on postId.
+ * @route GET /api/v1/post/:postId
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Object} - Post object.
+ * @throws {ApiError} - If fetching post fails.
+ */
+const getSinglePost = asyncHandler(async (req, res) => {
+  try {
+    const { postId } = req.params;
+
+    const post = await Post.findById(postId)
+      .populate({
+        path: "author",
+        select: "username profilePicture",
+      })
+      .populate({
+        path: "comments",
+        populate: {
+          path: "author",
+          select: "username profilePicture",
+        },
+        $sort: {
+          createdAt: -1,
+        },
+      });
+    if (!post) {
+      throw new ApiError(404, "Post not found");
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Post fetched successfully", post));
+  } catch (error) {
+    console.log(error);
+    throw new ApiError(
+      error?.statusCode || 500,
+      error?.message || "Something went wrong while fetching post"
+    );
+  }
+});
+
+export {
+  createPost,
+  deletePost,
+  dislikePost,
+  getAllPosts,
+  getSinglePost,
+  likePost,
+};

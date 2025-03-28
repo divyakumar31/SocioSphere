@@ -1,14 +1,16 @@
 import { likeDislikePostApi } from "@/api";
-import { dislikePost, likePost } from "@/features/postSlice";
+import { dislikePost, likePost, setCurrentPost } from "@/features/postSlice";
 import { HeartIcon, MessageCircleIcon } from "lucide-react";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const ProfilePostImage = ({ post, userId }) => {
   // TODO: Rename this component to PostImage
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [liked, setLiked] = useState(post.likes?.includes(userId));
   const handleLikeDislike = async (e) => {
     e.stopPropagation();
@@ -34,11 +36,17 @@ const ProfilePostImage = ({ post, userId }) => {
   };
 
   const handlePostClick = (e) => {
-    console.log("Post Clicked");
+    e.stopPropagation();
+    dispatch(setCurrentPost(post._id));
+    navigate(`/p/${post._id}`);
   };
   return (
     <>
-      <div key={post._id} className="relative flex-1 min-h-40">
+      <div
+        key={post._id}
+        className="relative flex-1 min-h-40"
+        onClick={handlePostClick}
+      >
         <img
           src={post.image}
           alt={post.caption}

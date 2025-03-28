@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
 /**
- * Fetch All posts for user feed.
+ * Add user comment for post.
  * @route POST /api/v1/comment/add/:postId
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
@@ -54,7 +54,7 @@ const addComment = asyncHandler(async (req, res) => {
 });
 
 /**
- * Fetch All posts for user feed.
+ * Fetch All comments for post.
  * @route GET /api/v1/comment/getall/:postId
  * @param {Object} req - Express request object.
  * @param {Object} res - Express response object.
@@ -87,5 +87,43 @@ const getAllComments = asyncHandler(async (req, res) => {
     );
   }
 });
+/**
+ * Delete comment for a post with comment id.
+ * @route DELETE /api/v1/comment/delete/:commentId
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {String} - Success Message.
+ * @throws {ApiError} - If deletion of comment fails.
+ */
+const deleteComment = asyncHandler(async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const comment = await Comment.findById(commentId);
 
-export { addComment, getAllComments };
+    if (!comment) {
+      throw new ApiError(404, "Comment not found");
+    }
+
+    const post = await Post.findById(comment.post);
+
+    if (!post) {
+      throw new ApiError(404, "Post not found");
+    }
+
+    await post.comments.pull(commentId);
+    await post.save();
+
+    await comment.deleteOne();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Comment deleted successfully"));
+  } catch (error) {
+    console.log(error);
+    throw new ApiError(
+      error?.statusCode || 500,
+      error?.message || "Something went wrong while deleting comments"
+    );
+  }
+});
+export { addComment, getAllComments, deleteComment };

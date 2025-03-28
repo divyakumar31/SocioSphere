@@ -112,7 +112,7 @@ const NavigationBar = () => {
     } else if (item.name === "Create") {
       setIsCreatePostModelOpen(true);
     } else {
-      console.log("CLicked", item);
+      console.log("Clicked", item);
     }
   };
 

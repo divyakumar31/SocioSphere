@@ -8,6 +8,7 @@ import NotFound from "./NotFound";
 import Profile from "./Profile";
 import ProtectedRoute from "./ProtectedRoute";
 import Signup from "./Signup";
+import SinglePost from "./SinglePost";
 export {
   Create,
   EditProfile,
@@ -19,4 +20,5 @@ export {
   Profile,
   ProtectedRoute,
   Signup,
+  SinglePost,
 };

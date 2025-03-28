@@ -64,6 +64,10 @@ const getAllPostsApi = () => {
   return apiClient.get("/post");
 };
 
+const getSinglePostApi = (postId) => {
+  return apiClient.get(`/post/${postId}`);
+};
+
 const likeDislikePostApi = (liked, postId) => {
   return apiClient.post(`/post/${liked}/${postId}`, {});
 };
@@ -77,12 +81,17 @@ const addCommentApi = (userComment, postId) => {
   return apiClient.post(`/comment/add/${postId}`, { text: userComment });
 };
 
+const deleteCommentApi = (commentId) => {
+  return apiClient.delete(`/comment/delete/${commentId}`);
+};
+
 export {
   addCommentApi,
   addPostApi,
   deletePostApi,
   followUnfollowApi,
   getAllPostsApi,
+  getSinglePostApi,
   getSuggestedUsersApi,
   getUserProfileApi,
   likeDislikePostApi,
@@ -90,4 +99,5 @@ export {
   logoutUserApi,
   registerUserApi,
   updateUserApi,
+  deleteCommentApi,
 };

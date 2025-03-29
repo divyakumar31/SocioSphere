@@ -20,7 +20,6 @@ const CommentBox = ({ userId }) => {
   const post = useSelector((state) => state.post.currentPost);
   const [userComment, setUserComment] = useState("");
   const dispatch = useDispatch();
-  const [openCommentorOptions, setOpenCommentorOptions] = useState(false);
   const handleUserComment = (e) => {
     setUserComment(e.target.value);
   };
@@ -50,6 +49,7 @@ const CommentBox = ({ userId }) => {
           (comment) => comment._id !== id
         );
         dispatch(setComments({ postId: post._id, comments: updatedComments }));
+        dispatch(setCurrentPost(post._id));
         toast.success(res.data.message);
       }
     } catch (error) {
@@ -60,13 +60,13 @@ const CommentBox = ({ userId }) => {
 
   return (
     <>
-      <div className="grid md:grid-cols-2 p-0 w-full gap-2 overflow-scroll scrollbar-none max-h-96">
+      <div className="grid md:grid-cols-2 p-0 w-full gap-2 overflow-scroll scrollbar-none h-full max-h-96">
         <img
           src={post.image}
           alt={post.caption}
           className="w-full object-contain self-center hidden md:block"
         />
-        <div className="p-2 max-h-96 relative flex flex-col">
+        <div className="p-2 h-96 relative flex flex-col">
           {/* Post Author details  */}
           <div className="flex items-center gap-2">
             <Link to={`/${post.author.username}`}>
@@ -149,7 +149,7 @@ const CommentBox = ({ userId }) => {
                       <CalculateTime time={comment.createdAt} />
                     </p>
                   </div>
-                  <Dialog onOpenChange={setOpenCommentorOptions}>
+                  <Dialog>
                     <DialogOverlay className={"bg-black/50"} />
                     <DialogTrigger asChild>
                       <Ellipsis className="cursor-pointer" />
@@ -158,7 +158,7 @@ const CommentBox = ({ userId }) => {
                       {comment.author._id === userId ? (
                         <DialogClose>
                           <Button
-                            className={"text-red-500 cursor-pointer"}
+                            className={"text-red-500 cursor-pointer w-full"}
                             variant={"ghost"}
                             onClick={() => handleDeleteComment(comment._id)}
                           >

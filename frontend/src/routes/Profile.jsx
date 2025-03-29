@@ -44,7 +44,7 @@ const Profile = () => {
 
   useEffect(() => {
     getProfileUserDetails();
-  }, [username]);
+  }, [username, user]);
 
   const handleShareProfile = () => {
     try {

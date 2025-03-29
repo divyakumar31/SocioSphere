@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { Dialog, DialogContent, DialogOverlay, DialogTitle } from "./ui/dialog";
+import { addUser } from "@/features/userSlice";
 
 const CreatePost = ({ open, setOpen, handleMainDialog }) => {
   const dispatch = useDispatch();
@@ -40,6 +41,11 @@ const CreatePost = ({ open, setOpen, handleMainDialog }) => {
         dispatch(addPost(res.data.data));
         // TODO: push post in user.post in userSlice
         // user.posts.push(res.data.data._id);
+        const updatedUser = {
+          ...user,
+          posts: [res.data.data._id, ...user.posts],
+        };
+        dispatch(addUser(updatedUser));
         toast.success(res.data.message);
         handleDialogClose();
         handleMainDialog(false);

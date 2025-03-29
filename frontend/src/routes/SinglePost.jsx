@@ -1,4 +1,9 @@
-import { addCommentApi, deleteCommentApi, getSinglePostApi } from "@/api";
+import {
+  addCommentApi,
+  deleteCommentApi,
+  getSinglePostApi,
+  likeDislikePostApi,
+} from "@/api";
 import { CalculateTime, CommentBox } from "@/components";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -9,7 +14,13 @@ import {
   DialogOverlay,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { addComment, setComments, setCurrentPost } from "@/features/postSlice";
+import {
+  addComment,
+  dislikePost,
+  likePost,
+  setComments,
+  setCurrentPost,
+} from "@/features/postSlice";
 import { Bookmark, Ellipsis, Heart, MessageCircle, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -41,11 +52,29 @@ const SinglePost = () => {
     getCurrentPost();
   }, [id]);
 
-  // TODO: hanlde like and bookmarked
-  const handleLike = () => {};
-  const handleBookmark = () => {};
+  const [liked, setLiked] = useState(currentPost.likes?.includes(user._id));
+  const [postLikes, setPostLikes] = useState(currentPost.likes.length);
+  const handleLike = async () => {
+    try {
+      const res = await likeDislikePostApi(liked ? "dislike" : "like", id);
+      if (res.data.success) {
+        dispatch(
+          liked
+            ? dislikePost({ postId: id, userId: user._id })
+            : likePost({ postId: id, userId: user._id })
+        );
+        setPostLikes(liked ? postLikes - 1 : postLikes + 1);
+      }
+      setLiked(!liked);
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error.response?.data.message || "Check your internet connection"
+      );
+    }
+  };
+  const handleBookmark = () => {}; // TODO:
   const bookmarked = true;
-  const liked = true;
 
   const [userComment, setUserComment] = useState("");
 
@@ -71,14 +100,15 @@ const SinglePost = () => {
     }
   };
 
-  const handleDeleteComment = async (id) => {
+  const handleDeleteComment = async (commentId) => {
     try {
-      const res = await deleteCommentApi(id);
+      const res = await deleteCommentApi(commentId);
       if (res.data.success) {
         const updatedComments = currentPost.comments.filter(
-          (comment) => comment._id !== id
+          (comment) => comment._id !== commentId
         );
-        dispatch(setComments(updatedComments));
+        dispatch(setComments({ postId: id, comments: updatedComments }));
+        dispatch(setCurrentPost(id));
         toast.success(res.data.message);
       }
     } catch (error) {
@@ -86,10 +116,10 @@ const SinglePost = () => {
       toast.error(error.response?.data.message);
     }
   };
-  const handleReportComment = () => {};
+  const handleReportComment = () => {}; // TODO:
   const handlePostShare = () => {
     navigator.clipboard.writeText(
-      `${import.meta.env.VITE_BASE_URL}/p/${post._id}?shid=${user._id}`
+      `${import.meta.env.VITE_BASE_URL}/p/${id}?shid=${user._id}`
     );
     toast.success("Copied to clipboard");
   };
@@ -110,11 +140,16 @@ const SinglePost = () => {
               <AvatarFallback>SS</AvatarFallback>
             </Avatar>
           </Link>
-          <Link to={`/${currentPost?.author.username}`} className="flex-1">
-            <h2 className="text-lg font-medium cursor-pointer">
-              {currentPost?.author.username}
-            </h2>
-          </Link>
+          <div className="flex flex-1 items-center">
+            <Link to={`/${currentPost?.author.username}`}>
+              <h2 className="text-lg font-medium cursor-pointer">
+                {currentPost?.author.username}
+              </h2>
+            </Link>
+            <p className="text-sm text-gray-400 ml-2">
+              <CalculateTime time={currentPost?.createdAt} />
+            </p>
+          </div>
           <Dialog>
             <DialogOverlay className={"bg-black/50"} />
             <DialogTrigger asChild>
@@ -185,7 +220,15 @@ const SinglePost = () => {
           </div>
         </div>
         <p className="text-gray-900 ">{currentPost?.caption}</p>
-        <p className="font-medium">{currentPost?.likes?.length} Likes</p>
+        <p className="font-medium">{postLikes} Likes</p>
+        {currentPost?.comments?.length > 0 && (
+          <p
+            className="text-sm text-gray-400 w-fit cursor-pointer md:hidden block"
+            onClick={() => setOpenCommentDialog(true)}
+          >
+            View all {currentPost?.comments.length} comments
+          </p>
+        )}
       </div>
       {/* Right */}
       <div className="hidden md:flex max-w-96 max-h-10/12 w-full h-full flex-col p-4 relative">
@@ -242,13 +285,15 @@ const SinglePost = () => {
                 </DialogTrigger>
                 <DialogContent className={"w-96"}>
                   {comment?.author._id === user._id ? (
-                    <Button
-                      className={"text-red-500 cursor-pointer"}
-                      variant={"ghost"}
-                      onClick={() => handleDeleteComment(comment._id)}
-                    >
-                      Delete Comment
-                    </Button>
+                    <DialogClose>
+                      <Button
+                        className={"text-red-500 cursor-pointer w-full"}
+                        variant={"ghost"}
+                        onClick={() => handleDeleteComment(comment._id)}
+                      >
+                        Delete Comment
+                      </Button>
+                    </DialogClose>
                   ) : (
                     <Button
                       className={"text-red-500 cursor-pointer"}
@@ -264,6 +309,10 @@ const SinglePost = () => {
               </Dialog>
             </div>
           ))}
+
+          {currentPost?.comments?.length === 0 && (
+            <p className="text-gray-700">No comments yet</p>
+          )}
         </div>
 
         {/* Comment Input */}

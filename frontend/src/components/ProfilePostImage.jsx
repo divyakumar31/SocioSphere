@@ -12,6 +12,7 @@ const ProfilePostImage = ({ post, userId }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [liked, setLiked] = useState(post.likes?.includes(userId));
+  const [postLikes, setPostLikes] = useState(post.likes.length);
   const handleLikeDislike = async (e) => {
     e.stopPropagation();
     try {
@@ -25,6 +26,7 @@ const ProfilePostImage = ({ post, userId }) => {
             ? dislikePost({ postId: post._id, userId: userId })
             : likePost({ postId: post._id, userId: userId })
         );
+        setPostLikes(liked ? postLikes - 1 : postLikes + 1);
       }
       setLiked(!liked);
     } catch (error) {
@@ -47,11 +49,13 @@ const ProfilePostImage = ({ post, userId }) => {
         className="relative flex-1 min-h-40"
         onClick={handlePostClick}
       >
-        <img
-          src={post.image}
-          alt={post.caption}
-          className="object-contain min-h-40 bg-white border"
-        />
+        <div className="w-full h-full">
+          <img
+            src={post.image}
+            alt={post.caption}
+            className="object-contain min-h-40 bg-white border h-full mx-auto"
+          />
+        </div>
         <div
           className="absolute top-0 w-full h-full bg-black/50 flex flex-wrap items-center justify-center gap-2 xsm:gap-4 opacity-0 hover:opacity-100 text-white"
           onClick={handlePostClick}
@@ -70,10 +74,11 @@ const ProfilePostImage = ({ post, userId }) => {
                 onClick={(e) => handleLikeDislike(e)}
               />
             )}
-            {post.likes?.length}
+            {postLikes}
           </p>
           <p className="flex gap-2">
-            <MessageCircleIcon /> {post.comments?.length}
+            <MessageCircleIcon className="cursor-pointer" />{" "}
+            {post.comments?.length}
           </p>
         </div>
       </div>

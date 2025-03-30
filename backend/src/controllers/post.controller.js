@@ -354,6 +354,42 @@ const getSinglePost = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * Save / Unsave post based on postId.
+ * @route POST /api/v1/post/save/:postId
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {String} - Success Message.
+ * @throws {ApiError} - If saving/removing post fails.
+ */
+const savePost = asyncHandler(async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    if (user.savedPosts.includes(postId)) {
+      user.savedPosts.pull(postId);
+    } else {
+      user.savedPosts.unshift(postId);
+    }
+
+    await user.save();
+
+    return res.status(200).json(new ApiResponse(200, "Success"));
+  } catch (error) {
+    console.log(error);
+    throw new ApiError(
+      error?.statusCode || 500,
+      error?.message || "Something went wrong while saving/removing post"
+    );
+  }
+});
+
 export {
   createPost,
   deletePost,
@@ -361,4 +397,5 @@ export {
   getAllPosts,
   getSinglePost,
   likePost,
+  savePost,
 };

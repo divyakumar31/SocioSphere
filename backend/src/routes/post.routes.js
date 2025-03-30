@@ -6,6 +6,7 @@ import {
   getAllPosts,
   getSinglePost,
   likePost,
+  savePost,
 } from "../controllers/post.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -26,5 +27,8 @@ router
 // To like and dislike
 router.route("/like/:postId").post(verifyJWT, likePost);
 router.route("/dislike/:postId").post(verifyJWT, dislikePost);
+
+// To save / unsave post
+router.route("/save/:postId").post(verifyJWT, savePost);
 
 export default router;

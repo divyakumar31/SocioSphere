@@ -24,6 +24,11 @@ const Profile = () => {
       setProfileUser({
         ...user,
         posts: userPosts.filter((p) => p.author._id === user._id),
+        savedPosts: userPosts.filter((p) => {
+          if (user.savedPosts.includes(p._id)) {
+            return p;
+          }
+        }),
       });
     } else {
       try {
@@ -242,15 +247,19 @@ const Profile = () => {
               <span className="mr-2">{profileUser.tweets?.length || 0}</span>
               Tweets
             </h2>
-            <h2
-              className={`p-2 rounded-t-md hover:bg-gray-200 cursor-pointer ${
-                showContent === "Saved" && "font-medium bg-gray-200"
-              }`}
-              onClick={() => setShowContent("Saved")}
-            >
-              <span className="mr-2">{profileUser?.saved?.length || 0}</span>
-              Saved
-            </h2>
+            {(username === user.username || username === "profile") && (
+              <h2
+                className={`p-2 rounded-t-md hover:bg-gray-200 cursor-pointer ${
+                  showContent === "Saved" && "font-medium bg-gray-200"
+                }`}
+                onClick={() => setShowContent("Saved")}
+              >
+                <span className="mr-2">
+                  {profileUser?.savedPosts?.length || 0}
+                </span>
+                Saved
+              </h2>
+            )}
           </div>
 
           {/* User Posts */}
@@ -282,19 +291,20 @@ const Profile = () => {
           )}
 
           {/* user Saved Posts */}
-          {showContent === "Saved" && (
-            <>
-              <div className="xsm:p-4 grid grid-cols-2 lg:grid-cols-3 gap-2">
-                {profileUser.posts?.map((post) => (
-                  <ProfilePostImage
-                    key={post._id}
-                    post={post}
-                    userId={user._id}
-                  />
-                ))}
-              </div>
-            </>
-          )}
+          {(username === user.username || username === "profile") &&
+            showContent === "Saved" && (
+              <>
+                <div className="xsm:p-4 grid grid-cols-2 lg:grid-cols-3 gap-2">
+                  {profileUser.savedPosts?.map((post) => (
+                    <ProfilePostImage
+                      key={post._id}
+                      post={post}
+                      userId={user._id}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
         </div>
       </div>
     </>

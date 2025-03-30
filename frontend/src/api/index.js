@@ -76,6 +76,10 @@ const deletePostApi = (postId) => {
   return apiClient.delete(`/post/${postId}`);
 };
 
+const savePostApi = (postId) => {
+  return apiClient.post(`/post/save/${postId}`, {});
+};
+
 // COMMENT APIs
 const addCommentApi = (userComment, postId) => {
   return apiClient.post(`/comment/add/${postId}`, { text: userComment });
@@ -100,4 +104,5 @@ export {
   registerUserApi,
   updateUserApi,
   deleteCommentApi,
+  savePostApi,
 };

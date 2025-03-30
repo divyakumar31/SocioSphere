@@ -3,6 +3,7 @@ import {
   deleteCommentApi,
   getSinglePostApi,
   likeDislikePostApi,
+  savePostApi,
 } from "@/api";
 import { CalculateTime, CommentBox } from "@/components";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -21,6 +22,7 @@ import {
   setComments,
   setCurrentPost,
 } from "@/features/postSlice";
+import { addUser } from "@/features/userSlice";
 import { Bookmark, Ellipsis, Heart, MessageCircle, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -29,7 +31,7 @@ import { Link, useParams } from "react-router-dom";
 
 const SinglePost = () => {
   const { id } = useParams();
-  let { currentPost } = useSelector((state) => state.post);
+  const { currentPost } = useSelector((state) => state.post);
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const getCurrentPost = async () => {
@@ -73,8 +75,36 @@ const SinglePost = () => {
       );
     }
   };
-  const handleBookmark = () => {}; // TODO:
-  const bookmarked = true;
+
+  const [bookmarked, setBookmarked] = useState(user.savedPosts?.includes(id));
+  const handleBookmark = async () => {
+    // TODO: completed it
+    try {
+      const res = await savePostApi(id);
+      if (res.data.success) {
+        let updatedUser;
+        if (bookmarked) {
+          updatedUser = {
+            ...user,
+            savedPosts: user.savedPosts.filter((pid) => pid !== id),
+          };
+        } else {
+          updatedUser = {
+            ...user,
+            savedPosts: [id, ...user.savedPosts],
+          };
+        }
+        dispatch(addUser(updatedUser));
+        setBookmarked(!bookmarked);
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error.response?.data.message || "Check your internet connection"
+      );
+    }
+  }; // TODO:
 
   const [userComment, setUserComment] = useState("");
 

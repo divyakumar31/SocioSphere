@@ -1,4 +1,9 @@
-import { addCommentApi, deletePostApi, likeDislikePostApi } from "@/api";
+import {
+  addCommentApi,
+  deletePostApi,
+  likeDislikePostApi,
+  savePostApi,
+} from "@/api";
 import {
   addComment,
   deletePost,
@@ -22,6 +27,7 @@ import {
   DialogOverlay,
   DialogTrigger,
 } from "./ui/dialog";
+import { addUser } from "@/features/userSlice";
 
 const Post = ({ post }) => {
   // TODO: Check if user is follow then only show Unfollow otherwise show follow option on the side of username
@@ -38,7 +44,7 @@ const Post = ({ post }) => {
     setLiked(post.likes?.includes(user._id));
     setPostLikes(post.likes.length);
     setPostComments(post.comments.length);
-    setBookmarked(post.bookmarks?.includes(user._id) || 0);
+    setBookmarked(user.savedPosts?.includes(post._id));
   }, [post]);
 
   // To like and dislike post
@@ -66,9 +72,33 @@ const Post = ({ post }) => {
   };
 
   // To add post in bookmarks TODO:
-  const handleBookmark = () => {
+  const handleBookmark = async () => {
     // TODO: completed it
-    setBookmarked(!bookmarked);
+    try {
+      const res = await savePostApi(post._id);
+      if (res.data.success) {
+        let updatedUser;
+        if (bookmarked) {
+          updatedUser = {
+            ...user,
+            savedPosts: user.savedPosts.filter((id) => id !== post._id),
+          };
+        } else {
+          updatedUser = {
+            ...user,
+            savedPosts: [post._id, ...user.savedPosts],
+          };
+        }
+        dispatch(addUser(updatedUser));
+        setBookmarked(!bookmarked);
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error.response?.data.message || "Check your internet connection"
+      );
+    }
   };
   const handleUserComment = (e) => {
     setUserComment(e.target.value);

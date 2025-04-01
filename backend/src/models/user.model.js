@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
       lowercase: true,
+      index: true,
     },
     email: {
       type: String,
@@ -22,6 +23,7 @@ const userSchema = new mongoose.Schema(
     },
     name: {
       type: String,
+      index: true,
     },
     profileType: {
       type: String,

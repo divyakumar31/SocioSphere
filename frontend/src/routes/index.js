@@ -7,6 +7,7 @@ import Login from "./Login";
 import NotFound from "./NotFound";
 import Profile from "./Profile";
 import ProtectedRoute from "./ProtectedRoute";
+import Search from "./Search";
 import Signup from "./Signup";
 import SinglePost from "./SinglePost";
 export {
@@ -19,6 +20,7 @@ export {
   NotFound,
   Profile,
   ProtectedRoute,
+  Search,
   Signup,
   SinglePost,
 };

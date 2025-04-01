@@ -1,5 +1,5 @@
 import { getSuggestedUsersApi } from "@/api";
-import { addSuggestedUsers } from "@/features/userSlice";
+import { addSuggestedUsers, addUser } from "@/features/userSlice";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,6 +33,32 @@ const SuggestionsBar = () => {
   const suggestions = suggestedUser?.filter(
     (u) => !user.following.includes(u._id)
   );
+
+  const handleFollowUnfollow = async (id) => {
+    try {
+      const res = await followUnfollowApi(id);
+      if (res.data.success) {
+        console.log(res.data);
+        let updatedUser;
+        if (user.followers.includes(id)) {
+          updatedUser = {
+            ...user,
+            following: user.following.filter((fid) => fid !== id),
+          };
+        } else {
+          updatedUser = {
+            ...user,
+            following: [id, ...user.following],
+          };
+        }
+        dispatch(addUser(updatedUser));
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data.message);
+    }
+  };
 
   return (
     <>
@@ -89,7 +115,10 @@ const SuggestionsBar = () => {
                     </p>
                   </div>
                   <div>
-                    <button className="text-blue-500 hover:text-blue-600 font-medium text-sm cursor-pointer">
+                    <button
+                      className="text-blue-500 hover:text-blue-600 font-medium text-sm cursor-pointer"
+                      onClick={() => handleFollowUnfollow(suggestion._id)}
+                    >
                       Follow
                     </button>
                   </div>

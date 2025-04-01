@@ -49,6 +49,10 @@ const followUnfollowApi = (profileUserId) => {
   return apiClient.post(`/user/follow-unfollow/${profileUserId}`, {});
 };
 
+const searchUserApi = (query) => {
+  return apiClient.get(`/user/search?query=${query}`);
+};
+
 // POST APIs
 const addPostApi = (data, postImage) => {
   const formData = new FormData();
@@ -92,6 +96,7 @@ const deleteCommentApi = (commentId) => {
 export {
   addCommentApi,
   addPostApi,
+  deleteCommentApi,
   deletePostApi,
   followUnfollowApi,
   getAllPostsApi,
@@ -102,7 +107,7 @@ export {
   loginUserApi,
   logoutUserApi,
   registerUserApi,
-  updateUserApi,
-  deleteCommentApi,
   savePostApi,
+  searchUserApi,
+  updateUserApi,
 };

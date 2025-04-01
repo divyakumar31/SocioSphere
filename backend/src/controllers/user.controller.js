@@ -290,6 +290,41 @@ const followOrUnfollowUser = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * Searches for users based on the provided searchQuery.
+ * @route GET /api/v1/user/search
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Object} - Array of User objects.
+ * @throws {ApiError} - If unable to search for users.
+ */
+const searchUsers = asyncHandler(async (req, res) => {
+  try {
+    const { query: searchQuery, page = 1, limit = 10 } = req.query;
+
+    if (!searchQuery) {
+      throw new ApiError(400, "Search query is required");
+    }
+
+    // Regex pattern to match only names that START with the searchQuery (case-insensitive)
+    const regex = new RegExp(`^${searchQuery}`, "i");
+
+    const users = await User.find(
+      { $or: [{ username: regex }, { name: regex }] },
+      "username name profilePicture"
+    )
+      .limit(parseInt(limit))
+      .skip((page - 1) * limit)
+      .lean();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Users fetched successfully", users));
+  } catch (error) {
+    throw new ApiError(500, error.message || "Error while searching users");
+  }
+});
+
 export {
   createUser,
   followOrUnfollowUser,
@@ -298,4 +333,5 @@ export {
   logoutUser,
   suggestUser,
   updateProfile,
+  searchUsers,
 };

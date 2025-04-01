@@ -106,7 +106,8 @@ const NavigationBar = () => {
       item.name === "Profile" ||
       item.name === "Home" ||
       item.name === "Explore" ||
-      item.name === "Message"
+      item.name === "Message" ||
+      item.name === "Search"
     ) {
       navigate(item.path);
     } else if (item.name === "Create") {

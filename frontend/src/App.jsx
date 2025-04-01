@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 import { ScrollToTop } from "./components";
 import { Dialog, DialogContent } from "./components/ui/dialog";
-import { useOnlineStatus } from "./lib/useOnlineStatus";
+import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import {
   EditProfile,
   Explore,
@@ -19,6 +19,7 @@ import {
   NotFound,
   Profile,
   ProtectedRoute,
+  Search,
   Signup,
   SinglePost,
 } from "./routes";
@@ -36,6 +37,12 @@ const App = () => {
             <Route path="/" element={<Layout />}>
               {/* All routes with same layout */}
               <Route index element={<ProtectedRoute children={<Home />} />} />
+
+              {/* Search user */}
+              <Route
+                path="search"
+                element={<ProtectedRoute children={<Search />} />}
+              />
 
               {/* Explore Tab */}
               <Route

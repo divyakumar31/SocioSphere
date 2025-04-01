@@ -5,6 +5,7 @@ import {
   getUserProfile,
   loginUser,
   logoutUser,
+  searchUsers,
   suggestUser,
   updateProfile,
 } from "../controllers/user.controller.js";
@@ -24,6 +25,9 @@ router
 
 // To get suggested users
 router.route("/suggest").get(verifyJWT, suggestUser);
+
+// Get Search Users
+router.route("/search").get(verifyJWT, searchUsers);
 
 // Get User Profile
 router.route("/:username").get(getUserProfile);

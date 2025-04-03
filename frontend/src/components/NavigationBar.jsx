@@ -19,6 +19,7 @@ import { CreatePost } from ".";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Create } from "@/routes";
 import { removePosts } from "@/features/postSlice";
+import { removeChat } from "@/features/chatSlice";
 
 const navItems = [
   {
@@ -89,6 +90,7 @@ const NavigationBar = () => {
         toast.success(res.data.message);
         dispatch(removeUser());
         dispatch(removePosts());
+        dispatch(removeChat());
         navigate("/login");
       }
     } catch (error) {

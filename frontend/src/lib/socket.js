@@ -8,9 +8,7 @@ const initializeSocket = (userId) => {
     query: { userId },
     transports: ["websocket"],
   });
-  socketio.on("connect", () => {
-    console.log("Connected to socket:", socketio.id);
-  });
+  socketio.on("connect", () => {});
   return socketio;
 };
 

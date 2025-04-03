@@ -231,6 +231,14 @@ const suggestUser = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * get User's profile based on username
+ * @route GET /api/v1/user/:username
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Object} - User object.
+ * @throws {ApiError} - If unable to fetch user profile.
+ */
 const getUserProfile = asyncHandler(async (req, res) => {
   try {
     const { username } = req.params;
@@ -256,6 +264,14 @@ const getUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * To follow or unfollow a user.
+ * @route POST /api/v1/user/follow-unfollow/:id
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {String} - Success Message.
+ * @throws {ApiError} - If unable to follow or unfollow user or following self.
+ */
 const followOrUnfollowUser = asyncHandler(async (req, res) => {
   try {
     const userToFollow = await User.findById(req.params.id);

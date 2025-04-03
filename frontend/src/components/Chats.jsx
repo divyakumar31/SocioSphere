@@ -3,7 +3,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useNavigation, useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useDispatch, useSelector } from "react-redux";
-import { setMessages, setSelectedChat } from "@/features/chatSlice";
+import {
+  setLastMessage,
+  setMessages,
+  setSelectedChat,
+} from "@/features/chatSlice";
 import { getMessagesApi, sendMessageApi } from "@/api";
 import toast from "react-hot-toast";
 import { useRealTimeMessages } from "@/hooks/useRealTimeMessage";
@@ -14,6 +18,7 @@ const Chats = () => {
   const { selectedChat, messages, chatList } = useSelector(
     (state) => state.chat
   );
+  const receiver = selectedChat?.participants?.find((p) => p._id !== user._id);
 
   const [textMessage, setTextMessage] = useState("");
   const messageContainerRef = useRef(null);
@@ -25,19 +30,33 @@ const Chats = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await sendMessageApi(selectedChat._id, textMessage);
+      console.log("receiver", receiver);
+
+      const res = await sendMessageApi(receiver?._id, textMessage);
       if (res.data.success) {
         dispatch(setMessages([...messages, res.data.data]));
+        // dispatch(
+        //   setLastMessage({
+        //     chatId: selectedChat._id,
+        //     message: {
+        //       _id: res.data.data._id,
+        //       message: res.data.data.message,
+        //       createdAt: res.data.data.createdAt,
+        //     },
+        //   })
+        // );
         setTextMessage("");
       }
     } catch (error) {
+      console.log(error);
+
       toast.error(error.response?.data.message);
     }
   };
 
   useEffect(() => {
     const getMessages = async () => {
-      dispatch(setSelectedChat(id));
+      // dispatch(setSelectedChat(id));
       try {
         const res = await getMessagesApi(id);
         if (res.data.success) {
@@ -50,7 +69,10 @@ const Chats = () => {
       }
     };
 
-    if (id !== undefined && !chatList.some((u) => u._id === id)) {
+    if (
+      id !== undefined &&
+      !chatList.some((u) => u.participants.some((p) => p._id === id))
+    ) {
       toast.error(
         "Chat not found at id undefined & selectedChat & id not equal"
       );
@@ -78,19 +100,19 @@ const Chats = () => {
             <MoveLeftIcon onClick={() => navigate("/inbox")} />
             <Avatar className={"w-12 h-12"}>
               <AvatarImage
-                src={selectedChat?.profilePicture}
-                alt={`${selectedChat?.username}'s chat`}
+                src={receiver?.profilePicture}
+                alt={`${receiver?.username}'s chat`}
                 className={"object-cover cursor-pointer"}
               />
               <AvatarFallback>SS</AvatarFallback>
             </Avatar>
 
             <div className="flex flex-col">
-              <Link to={`/${selectedChat?.username}`} className="font-medium">
-                {selectedChat?.username}
+              <Link to={`/${receiver?.username}`} className="font-medium">
+                {receiver?.username}
               </Link>
               <p className="text-sm text-gray-400 w-40 truncate">
-                {selectedChat?.name}
+                {receiver?.name}
               </p>
             </div>
           </header>
@@ -112,12 +134,12 @@ const Chats = () => {
                       src={
                         message.sender === user._id
                           ? user.profilePicture
-                          : selectedChat?.profilePicture
+                          : receiver?.profilePicture
                       }
                       alt={
                         message.sender === user._id
                           ? user.username
-                          : selectedChat?.username
+                          : receiver?.username
                       }
                       className={"object-cover cursor-pointer"}
                     />

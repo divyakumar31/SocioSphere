@@ -102,6 +102,10 @@ const sendMessageApi = (receiverId, data) => {
   return apiClient.post(`/message/send/${receiverId}`, { text: data.trim() });
 };
 
+const getConversationsApi = () => {
+  return apiClient.get("/message/list");
+};
+
 export {
   addCommentApi,
   addPostApi,
@@ -121,4 +125,5 @@ export {
   searchUserApi,
   sendMessageApi,
   updateUserApi,
+  getConversationsApi,
 };

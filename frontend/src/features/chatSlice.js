@@ -12,9 +12,20 @@ const chatSlice = createSlice({
   initialState,
   reducers: {
     setSelectedChat: (state, action) => {
-      state.selectedChat = state.chatList.filter(
+      // state.selectedChat = state.chatList.find((chat) =>
+      //   chat.participants.find((p) => p._id === action.payload)
+      // );
+      state.selectedChat = state.chatList.find(
         (chat) => chat._id === action.payload
-      )[0];
+      );
+    },
+    setLastMessage: (state, action) => {
+      state.chatList = state.chatList.map((chat) => {
+        if (chat._id === action.payload.chatId) {
+          chat.lastMessage = action.payload.message;
+        }
+        return chat;
+      });
     },
     setChatList: (state, action) => {
       state.chatList = action.payload;
@@ -36,6 +47,7 @@ const chatSlice = createSlice({
 
 export const {
   setSelectedChat,
+  setLastMessage,
   setChatList,
   setOnlineUsers,
   removeChat,

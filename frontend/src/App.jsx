@@ -38,12 +38,10 @@ const App = () => {
     if (user) {
       const socketio = initializeSocket(user._id);
       socketio.on("onlineUsers", (onlineUsers) => {
-        console.log("Online users on sociosphere", onlineUsers);
         dispatch(setOnlineUsers(onlineUsers));
       });
       return () => {
         closeSocket();
-        console.log("socket closed");
       };
     }
   }, [user, dispatch]);

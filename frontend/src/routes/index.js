@@ -1,3 +1,4 @@
+import ChatLayout from "./ChatLayout";
 import Create from "./Create";
 import EditProfile from "./EditProfile";
 import Explore from "./Explore";
@@ -11,6 +12,7 @@ import Search from "./Search";
 import Signup from "./Signup";
 import SinglePost from "./SinglePost";
 export {
+  ChatLayout,
   Create,
   EditProfile,
   Explore,

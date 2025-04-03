@@ -93,6 +93,15 @@ const deleteCommentApi = (commentId) => {
   return apiClient.delete(`/comment/delete/${commentId}`);
 };
 
+// Chat APIs
+const getMessagesApi = (receiverId) => {
+  return apiClient.get(`/message/all/${receiverId}`);
+};
+
+const sendMessageApi = (receiverId, data) => {
+  return apiClient.post(`/message/send/${receiverId}`, { text: data.trim() });
+};
+
 export {
   addCommentApi,
   addPostApi,
@@ -100,6 +109,7 @@ export {
   deletePostApi,
   followUnfollowApi,
   getAllPostsApi,
+  getMessagesApi,
   getSinglePostApi,
   getSuggestedUsersApi,
   getUserProfileApi,
@@ -109,5 +119,6 @@ export {
   registerUserApi,
   savePostApi,
   searchUserApi,
+  sendMessageApi,
   updateUserApi,
 };

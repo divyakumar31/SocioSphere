@@ -164,6 +164,11 @@ const updateProfile = asyncHandler(async (req, res) => {
     const { bio, gender, name, email, profileType } = req.body;
     const avatarLocalPath = req.file?.path;
 
+    const user = await User.findById(req.user._id).select("-password");
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
     let avatar;
     if (avatarLocalPath) {
       avatar = await uploadOnCloudinary(avatarLocalPath);
@@ -172,10 +177,6 @@ const updateProfile = asyncHandler(async (req, res) => {
       }
     }
 
-    const user = await User.findById(req.user._id).select("-password");
-    if (!user) {
-      throw new ApiError(404, "User not found");
-    }
     if (bio) user.bio = bio;
     if (gender !== "undefined") user.gender = gender;
     if (name) user.name = name;

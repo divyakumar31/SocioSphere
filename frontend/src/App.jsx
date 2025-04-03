@@ -1,6 +1,7 @@
 import { WifiOffIcon } from "lucide-react";
+import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Navigate,
   Route,
@@ -9,8 +10,11 @@ import {
 } from "react-router-dom";
 import { ScrollToTop } from "./components";
 import { Dialog, DialogContent } from "./components/ui/dialog";
+import { setOnlineUsers } from "./features/chatSlice";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
+import { closeSocket, initializeSocket } from "./lib/socket";
 import {
+  ChatLayout,
   EditProfile,
   Explore,
   Home,
@@ -28,6 +32,22 @@ const App = () => {
   const { user } = useSelector((state) => state.user);
 
   const isOnline = useOnlineStatus();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (user) {
+      const socketio = initializeSocket(user._id);
+      socketio.on("onlineUsers", (onlineUsers) => {
+        console.log("Online users on sociosphere", onlineUsers);
+        dispatch(setOnlineUsers(onlineUsers));
+      });
+      return () => {
+        closeSocket();
+        console.log("socket closed");
+      };
+    }
+  }, [user, dispatch]);
+
   return (
     <>
       {isOnline ? (
@@ -71,11 +91,9 @@ const App = () => {
 
             {/* Chat Routes */}
             <Route
-              path="/inbox/"
-              element={<ProtectedRoute children={<Layout />} />}
-            >
-              <Route path=":id" element={<ProtectedRoute children={"Hey"} />} />
-            </Route>
+              path="/inbox/:id?"
+              element={<ProtectedRoute children={<ChatLayout />} />}
+            />
 
             {/* Login Signup Routes */}
             <Route

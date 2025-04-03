@@ -31,7 +31,7 @@ import { Link, useParams } from "react-router-dom";
 
 const SinglePost = () => {
   const { id } = useParams();
-  const { currentPost } = useSelector((state) => state.post);
+  let { currentPost } = useSelector((state) => state.post);
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const getCurrentPost = async () => {

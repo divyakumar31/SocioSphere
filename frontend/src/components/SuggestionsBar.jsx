@@ -1,4 +1,4 @@
-import { getSuggestedUsersApi } from "@/api";
+import { followUnfollowApi, getSuggestedUsersApi } from "@/api";
 import { addSuggestedUsers, addUser } from "@/features/userSlice";
 import { useEffect } from "react";
 import toast from "react-hot-toast";

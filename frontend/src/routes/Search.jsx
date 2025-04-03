@@ -59,7 +59,7 @@ const Search = () => {
         className="mt-4 flex-1 w-full max-w-lg mx-auto overflow-scroll scrollbar-none"
       >
         {users.map((user) => (
-          <div className="flex items-center gap-2 border-b p-2">
+          <div className="flex items-center gap-2 border-b p-2" key={user._id}>
             <Avatar className={"w-12 h-12"}>
               <AvatarImage
                 src={user?.profilePicture || "/assets/default_img.jpg"}

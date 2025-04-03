@@ -120,7 +120,7 @@ const NavigationBar = () => {
   return (
     <>
       {/* NavBar for md and above */}
-      <div className="hidden xsm:flex p-4  flex-col items-center md:w-full h-screen sticky top-0 left-0 md:max-w-60 border-r">
+      <div className="hidden xsm:flex p-4 flex-col items-center md:w-full h-screen sticky top-0 left-0 md:max-w-60 border-r">
         {/* Logo */}
         <NavLink to="/">
           <img

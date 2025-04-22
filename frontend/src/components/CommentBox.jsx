@@ -69,7 +69,7 @@ const CommentBox = ({ userId }) => {
         <div className="p-2 h-96 relative flex flex-col">
           {/* Post Author details  */}
           <div className="flex items-center gap-2">
-            <Link to={`/${post.author.username}`}>
+            <Link to={`/${post.author?.username}`}>
               <Avatar className={"w-8 h-8"}>
                 <AvatarImage
                   src={post.author?.profilePicture || "/assets/default_img.jpg"}
@@ -80,8 +80,8 @@ const CommentBox = ({ userId }) => {
             </Link>
             <div className="flex flex-auto">
               <h2 className="font-medium cursor-pointer">
-                <Link to={`/${post.author.username}`}>
-                  {post.author.username}
+                <Link to={`/${post.author?.username}`}>
+                  {post.author?.username}
                 </Link>
               </h2>
             </div>
@@ -91,7 +91,7 @@ const CommentBox = ({ userId }) => {
                 <Ellipsis className="cursor-pointer" />
               </DialogTrigger>
               <DialogContent className={"w-96"}>
-                {post.author._id === userId ? (
+                {post.author?._id === userId ? (
                   <Button
                     className={"text-red-500 cursor-pointer"}
                     variant={"ghost"}

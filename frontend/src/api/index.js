@@ -106,6 +106,10 @@ const getConversationsApi = () => {
   return apiClient.get("/message/list");
 };
 
+const markMessageAsSeenApi = (conversationId) => {
+  return apiClient.post(`/message/seen/${conversationId}`, {});
+};
+
 export {
   addCommentApi,
   addPostApi,
@@ -113,6 +117,7 @@ export {
   deletePostApi,
   followUnfollowApi,
   getAllPostsApi,
+  getConversationsApi,
   getMessagesApi,
   getSinglePostApi,
   getSuggestedUsersApi,
@@ -120,10 +125,10 @@ export {
   likeDislikePostApi,
   loginUserApi,
   logoutUserApi,
+  markMessageAsSeenApi,
   registerUserApi,
   savePostApi,
   searchUserApi,
   sendMessageApi,
   updateUserApi,
-  getConversationsApi,
 };

@@ -176,10 +176,9 @@ const updateProfile = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Error while uploading on avatar");
       }
     }
-
-    if (bio) user.bio = bio;
+    if (bio !== "undefined") user.bio = bio;
     if (gender !== "undefined") user.gender = gender;
-    if (name) user.name = name;
+    if (name !== "undefined") user.name = name;
     if (email) user.email = email;
     if (profileType !== "undefined") user.profileType = profileType;
     if (avatar?.url) {

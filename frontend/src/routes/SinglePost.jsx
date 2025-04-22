@@ -20,7 +20,6 @@ import {
   dislikePost,
   likePost,
   setComments,
-  setCurrentPost,
 } from "@/features/postSlice";
 import { addUser } from "@/features/userSlice";
 import { Bookmark, Ellipsis, Heart, MessageCircle, Send } from "lucide-react";
@@ -31,16 +30,26 @@ import { Link, useParams } from "react-router-dom";
 
 const SinglePost = () => {
   const { id } = useParams();
-  let { currentPost } = useSelector((state) => state.post);
+  // const { currentPost } = useSelector((state) => state.post);
+  const [currentPost, setCurrentPost] = useState(null);
+  console.log(`States id: ${id}, currentPost: ${currentPost}`);
+
   const { user } = useSelector((state) => state.user);
+  const [liked, setLiked] = useState(currentPost?.likes?.includes(user._id));
+  const [postLikes, setPostLikes] = useState(currentPost?.likes?.length || 0);
+  const [bookmarked, setBookmarked] = useState(user.savedPosts?.includes(id));
+  const [userComment, setUserComment] = useState("");
+
   const dispatch = useDispatch();
   const getCurrentPost = async () => {
     try {
-      if (currentPost._id !== id) {
-        const res = getSinglePostApi(id);
+      if (currentPost?._id !== id) {
+        const res = await getSinglePostApi(id);
+        console.log("response: ", res.data);
+
         if (res.data.success) {
           toast.success(res.data.message);
-          currentPost = res.data.data;
+          setCurrentPost(res.data.data);
         }
       } else {
         toast.success("Post already loaded");
@@ -51,11 +60,12 @@ const SinglePost = () => {
     }
   };
   useEffect(() => {
-    getCurrentPost();
-  }, [id]);
+    console.log("Id: ", id);
+    console.log("currentPost: ", currentPost);
 
-  const [liked, setLiked] = useState(currentPost.likes?.includes(user._id));
-  const [postLikes, setPostLikes] = useState(currentPost.likes.length);
+    getCurrentPost();
+  }, [id, currentPost]);
+
   const handleLike = async () => {
     try {
       const res = await likeDislikePostApi(liked ? "dislike" : "like", id);
@@ -76,7 +86,6 @@ const SinglePost = () => {
     }
   };
 
-  const [bookmarked, setBookmarked] = useState(user.savedPosts?.includes(id));
   const handleBookmark = async () => {
     // TODO: completed it
     try {
@@ -105,8 +114,6 @@ const SinglePost = () => {
       );
     }
   }; // TODO:
-
-  const [userComment, setUserComment] = useState("");
 
   const handleUserComment = (e) => {
     setUserComment(e.target.value);
@@ -161,19 +168,19 @@ const SinglePost = () => {
       {/* Left */}
       <div className="max-w-96 max-h-10/12 w-full h-full flex flex-col p-4 ">
         <div className="flex items-center gap-2">
-          <Link to={`/${currentPost?.author.username}`}>
+          <Link to={`/${currentPost?.author?.username}`}>
             <Avatar className="w-10 h-10">
               <AvatarImage
-                src={currentPost?.author.profilePicture}
+                src={currentPost?.author?.profilePicture}
                 className="object-cover cursor-pointer"
               />
               <AvatarFallback>SS</AvatarFallback>
             </Avatar>
           </Link>
           <div className="flex flex-1 items-center">
-            <Link to={`/${currentPost?.author.username}`}>
+            <Link to={`/${currentPost?.author?.username}`}>
               <h2 className="text-lg font-medium cursor-pointer">
-                {currentPost?.author.username}
+                {currentPost?.author?.username}
               </h2>
             </Link>
             <p className="text-sm text-gray-400 ml-2">
@@ -186,7 +193,7 @@ const SinglePost = () => {
               <Ellipsis className="cursor-pointer" />
             </DialogTrigger>
             <DialogContent className={"w-96"}>
-              {currentPost?.author._id === user._id ? (
+              {currentPost?.author?._id === user._id ? (
                 <Button
                   className={"text-red-500 cursor-pointer"}
                   variant={"ghost"}
@@ -256,7 +263,7 @@ const SinglePost = () => {
             className="text-sm text-gray-400 w-fit cursor-pointer md:hidden block"
             onClick={() => setOpenCommentDialog(true)}
           >
-            View all {currentPost?.comments.length} comments
+            View all {currentPost?.comments?.length} comments
           </p>
         )}
       </div>
@@ -264,7 +271,7 @@ const SinglePost = () => {
       <div className="hidden md:flex max-w-96 max-h-10/12 w-full h-full flex-col p-4 relative">
         {/* Caption */}
         <div className="flex items-center gap-2 mb-2">
-          <Link to={`/${currentPost?.author.username}`}>
+          <Link to={`/${currentPost?.author?.username}`}>
             <Avatar className="w-10 h-10">
               <AvatarImage
                 src={currentPost?.author?.profilePicture}
@@ -275,7 +282,7 @@ const SinglePost = () => {
           </Link>
           <div className="flex-1">
             <h2 className="text-lg font-medium cursor-pointer w-fit">
-              <Link to={`/${currentPost?.author.username}`}>
+              <Link to={`/${currentPost?.author?.username}`}>
                 {currentPost?.author?.username}
               </Link>
             </h2>

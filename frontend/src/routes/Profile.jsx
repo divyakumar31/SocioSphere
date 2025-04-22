@@ -191,10 +191,10 @@ const Profile = () => {
                 </div>
               </div>
               {/* User's name */}
-              {profileUser.name && (
+              {profileUser?.name && (
                 <div>
                   <h2 className="font-medium xsm:text-lg xsm:font-semibold">
-                    {profileUser.name}
+                    {profileUser?.name}
                   </h2>
                 </div>
               )}

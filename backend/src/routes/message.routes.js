@@ -1,10 +1,11 @@
 import Router from "express";
-import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {
   getChatList,
   getMessages,
+  markMessageAsSeen,
   sendMessage,
 } from "../controllers/message.controller.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -16,5 +17,8 @@ router.route("/send/:id").post(verifyJWT, sendMessage);
 
 // To get all comments from a post
 router.route("/all/:id").get(verifyJWT, getMessages);
+
+// To seen message and delete
+router.route("/seen/:conversationId").post(verifyJWT, markMessageAsSeen);
 
 export default router;

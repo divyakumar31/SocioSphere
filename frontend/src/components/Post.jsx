@@ -228,7 +228,7 @@ const Post = ({ post }) => {
             <MessageCircle
               className="cursor-pointer"
               onClick={() => {
-                dispatch(setCurrentPost(post._id));
+                dispatch(setCurrentPost(post));
                 setCommentSection(true);
               }}
             />
@@ -253,7 +253,7 @@ const Post = ({ post }) => {
         <div
           className="text-sm text-gray-400 w-fit cursor-pointer"
           onClick={() => {
-            dispatch(setCurrentPost(post._id));
+            dispatch(setCurrentPost(post));
             setCommentSection(true);
           }}
         >

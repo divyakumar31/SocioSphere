@@ -322,6 +322,7 @@ const dislikePost = asyncHandler(async (req, res) => {
 const getSinglePost = asyncHandler(async (req, res) => {
   try {
     const { postId } = req.params;
+    console.log("PostId:", postId);
 
     const post = await Post.findById(postId)
       .populate({

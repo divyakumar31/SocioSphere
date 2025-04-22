@@ -61,8 +61,7 @@ export const postSlice = createSlice({
       }
     },
     setCurrentPost: (state, action) => {
-      state.currentPost =
-        state.post.find((post) => post._id === action.payload) || null;
+      state.currentPost = action.payload;
     },
   },
 });

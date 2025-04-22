@@ -5,6 +5,7 @@ import { Message } from "../models/message.model.js";
 import { Conversation } from "../models/conversation.model.js";
 import { io } from "../app.js";
 import { getClientSocketId } from "../socket/socket.js";
+import { mongoPathValidator } from "../validators/mongodb.validator.js";
 
 /**
  * Send Message to a user.
@@ -19,6 +20,9 @@ const sendMessage = asyncHandler(async (req, res) => {
     const receiverId = req.params.id;
     const { text } = req.body;
     const senderId = req.user._id;
+
+    console.log("Sender ID: ", senderId);
+    console.log("recev ID: ", receiverId);
 
     if (!text) {
       throw new ApiError(400, "All fields are required");
@@ -131,15 +135,10 @@ const getChatList = asyncHandler(async (req, res) => {
         participants: { $in: [userId] },
       },
       { messages: 0 }
-    )
-      .populate({
-        path: "lastMessage",
-        select: "message createdAt",
-      })
-      .populate({
-        path: "participants",
-        select: "username profilePicture name",
-      });
+    ).populate({
+      path: "participants",
+      select: "username profilePicture name",
+    });
 
     return res
       .status(200)
@@ -154,4 +153,56 @@ const getChatList = asyncHandler(async (req, res) => {
     );
   }
 });
-export { sendMessage, getMessages, getChatList };
+
+/**
+ * Mark a message as seen.
+ * @route POST /api/v1/message/seen/:conversationId
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Object} - Updated Message object.
+ * @throws {ApiError} - If message marking fails.
+ */
+const markMessageAsSeen = asyncHandler(async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+
+    mongoPathValidator(conversationId);
+
+    const conversation =
+      await Conversation.findById(conversationId).populate("messages");
+
+    if (!conversation) {
+      throw new ApiError(404, "Conversation not found");
+    }
+    console.log("COnvo: ", conversation);
+    const unseenMessages = conversation.messages.filter(
+      (msg) => !msg.seen && msg.sender.toString() !== req.user._id.toString()
+    );
+    console.log("UnseenMsg: ", unseenMessages);
+
+    if (unseenMessages.length === 0) {
+      return res
+        .status(200)
+        .json(new ApiResponse(200, "All messages already seen"));
+    }
+
+    const messageIds = unseenMessages.map((msg) => msg._id);
+    await Message.updateMany(
+      { _id: { $in: messageIds } },
+      { $set: { seen: true, seenAt: new Date() } }
+    );
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, `${messageIds.length} messages marked as seen`)
+      );
+  } catch (error) {
+    console.log(error);
+    throw new ApiError(
+      error?.statusCode || 500,
+      error?.message || "Something went wrong while updating message status"
+    );
+  }
+});
+export { sendMessage, getMessages, getChatList, markMessageAsSeen };

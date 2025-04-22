@@ -78,7 +78,7 @@ const SuggestionsBar = () => {
             <h2 className="font-semibold cursor-pointer w-fit">
               <Link to={`/${user.username}`}>{user.username}</Link>
             </h2>
-            <p className="text-gray-400">{user?.name || "sociosphere"}</p>
+            <p className="text-gray-400">{user?.name}</p>
           </div>
         </div>
 
@@ -110,9 +110,7 @@ const SuggestionsBar = () => {
                         {suggestion.username}
                       </Link>
                     </h2>
-                    <p className="text-gray-400">
-                      {suggestion?.name || "sociosphere"}
-                    </p>
+                    <p className="text-gray-400">{suggestion?.name}</p>
                   </div>
                   <div>
                     <button

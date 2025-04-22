@@ -15,9 +15,10 @@ const chatSlice = createSlice({
       // state.selectedChat = state.chatList.find((chat) =>
       //   chat.participants.find((p) => p._id === action.payload)
       // );
-      state.selectedChat = state.chatList.find(
-        (chat) => chat._id === action.payload
-      );
+      // state.selectedChat = state.chatList.find(
+      //   (chat) => chat._id === action.payload
+      // );
+      state.selectedChat = action.payload;
     },
     setLastMessage: (state, action) => {
       state.chatList = state.chatList.map((chat) => {

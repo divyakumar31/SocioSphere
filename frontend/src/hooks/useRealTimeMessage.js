@@ -4,12 +4,14 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 export const useRealTimeMessages = () => {
-  const messages = useSelector((state) => state.chat.messages);
+  const { messages, selectedChat } = useSelector((state) => state.chat);
   const dispatch = useDispatch();
   const socketio = getSocket();
   useEffect(() => {
     socketio?.on("message", (data) => {
-      dispatch(setMessages([...messages, data]));
+      if (selectedChat._id === data.sender) {
+        dispatch(setMessages([...messages, data]));
+      }
     });
     return () => {
       socketio?.off("message");

@@ -16,12 +16,19 @@ const ChatList = ({ id }) => {
     // dispatch(setChatList(suggestedUser));
     const getChatList = async () => {
       try {
-        const res = await getConversationsApi();
-        if (res.data.success) {
-          console.log(res.data.data);
-
-          dispatch(setChatList(res.data.data));
+        const userList = suggestedUser.filter((u) =>
+          user.following.includes(u._id)
+        );
+        if (userList.length === 0) {
+          dispatch(setChatList(suggestedUser));
+        } else {
+          dispatch(setChatList(userList));
         }
+        // const res = await getConversationsApi();
+        // if (res.data.success) {
+        //   console.log(res.data.data);
+        //   dispatch(setChatList(res.data.data));
+        // }
       } catch (error) {
         console.log(error);
       }
@@ -30,6 +37,8 @@ const ChatList = ({ id }) => {
       getChatList();
     }
     return () => {
+      console.log("Selected user removed");
+
       dispatch(setSelectedChat(null));
     };
   }, [suggestedUser]);
@@ -49,45 +58,39 @@ const ChatList = ({ id }) => {
       <h1 className="font-semibold mt-4">Chats</h1>
 
       <div className="mt-4 space-y-2 overflow-scroll scrollbar-none">
-        {chatList?.map((u) => {
-          const receiver = u?.participants.find((p) => p._id !== user._id);
-          return (
-            <Link
-              key={u._id}
-              to={`/inbox/${receiver?._id}`}
-              className={`flex items-center gap-2 px-1 py-2 hover:bg-gray-200 cursor-pointer rounded-lg ${
-                receiver?._id === id ? "bg-gray-200" : ""
-              }`}
-              onClick={() => {
-                dispatch(setSelectedChat(u._id));
-              }}
-            >
-              <div className="relative">
-                <Avatar className={"w-10 h-10"}>
-                  <AvatarImage
-                    src={receiver?.profilePicture}
-                    alt={`${receiver?.username}'s chat`}
-                    className={"object-cover cursor-pointer"}
-                  />
-                  <AvatarFallback>SS</AvatarFallback>
-                </Avatar>
-                {onlineUsers.includes(receiver?._id) && (
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full"></span>
-                )}
-              </div>
+        {chatList?.map((u) => (
+          <Link
+            key={u?._id}
+            to={`/inbox/${u?._id}`}
+            className={`flex items-center gap-2 px-1 py-2 hover:bg-gray-200 cursor-pointer rounded-lg ${
+              u?._id === id ? "bg-gray-200" : ""
+            }`}
+            onClick={() => {
+              dispatch(setSelectedChat(u));
+            }}
+          >
+            <div className="relative">
+              <Avatar className={"w-10 h-10"}>
+                <AvatarImage
+                  src={u?.profilePicture}
+                  alt={`${u?.username}'s chat`}
+                  className={"object-cover cursor-pointer"}
+                />
+                <AvatarFallback>SS</AvatarFallback>
+              </Avatar>
+              {onlineUsers.includes(u?._id) && (
+                <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full"></span>
+              )}
+            </div>
 
-              <div className="flex flex-col relative">
-                <p className="">{receiver?.username} </p>
-                <p className="text-sm text-gray-400 w-40 truncate">
-                  {u.lastMessage?.message}
-                </p>
-                <span className="absolute right-2 top-3.5 text-xs text-gray-400 ml-2">
-                  <CalculateTime time={u.lastMessage?.createdAt} />
-                </span>
-              </div>
-            </Link>
-          );
-        })}
+            <div className="flex flex-col relative">
+              <p className="">{u?.username} </p>
+              {/* <p className="text-sm text-gray-400 w-40 truncate">
+                  <CalculateTime time={u?.createdAt} />
+                </p> */}
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   );

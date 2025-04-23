@@ -1,11 +1,10 @@
-import asyncHandler from "../utils/asyncHandler.js";
+import { io } from "../app.js";
+import { Conversation } from "../models/conversation.model.js";
+import { Message } from "../models/message.model.js";
+import { getClientSocketId } from "../socket/socket.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { Message } from "../models/message.model.js";
-import { Conversation } from "../models/conversation.model.js";
-import { io } from "../app.js";
-import { getClientSocketId } from "../socket/socket.js";
-import { mongoPathValidator } from "../validators/mongodb.validator.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
 /**
  * Send Message to a user.
@@ -206,4 +205,4 @@ const getChatList = asyncHandler(async (req, res) => {
 //   }
 // });
 
-export { sendMessage, getMessages, getChatList };
+export { getChatList, getMessages, sendMessage };

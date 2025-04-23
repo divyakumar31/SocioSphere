@@ -21,6 +21,7 @@ import {
   Layout,
   Login,
   NotFound,
+  Notification,
   Profile,
   ProtectedRoute,
   Search,
@@ -78,6 +79,12 @@ const App = () => {
               <Route
                 path="e/profile"
                 element={<ProtectedRoute children={<EditProfile />} />}
+              />
+
+              {/* Edit Profile */}
+              <Route
+                path="notification"
+                element={<ProtectedRoute children={<Notification />} />}
               />
 
               {/* Any User Profile */}

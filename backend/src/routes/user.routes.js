@@ -6,6 +6,7 @@ import {
   loginUser,
   logoutUser,
   searchUsers,
+  seenUserNotifications,
   suggestUser,
   updateProfile,
 } from "../controllers/user.controller.js";
@@ -34,5 +35,8 @@ router.route("/:username").get(getUserProfile);
 
 // To follow and unfollow users
 router.route("/follow-unfollow/:id").post(verifyJWT, followOrUnfollowUser);
+
+// seen notifications by user
+router.route("/notifications").post(verifyJWT, seenUserNotifications);
 
 export default router;

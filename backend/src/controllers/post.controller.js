@@ -5,6 +5,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { deleteOnCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
+import { getClientSocketId } from "../socket/socket.js";
+import { io } from "../app.js";
 
 /**
  * Creates a new post.
@@ -265,7 +267,16 @@ const likePost = asyncHandler(async (req, res) => {
     //   post.likes.push(userId);
     // }
 
+    // Set notification to postUser
+    const postOwner = await User.findById(post.author);
+    postOwner.notifications.push(`${req.user.username} liked your post.`);
     // implementing socket io for real time notification
+    const postOwnerSocketId = getClientSocketId(post.author.toString());
+    if (postOwnerSocketId) {
+      io.to(postOwnerSocketId).emit("notification", {
+        message: `${req.user.username} liked your post.`,
+      });
+    }
 
     return res
       .status(200)

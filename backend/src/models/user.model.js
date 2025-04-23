@@ -66,6 +66,11 @@ const userSchema = new mongoose.Schema(
         ref: "Post",
       },
     ],
+    notifications: [
+      {
+        type: String,
+      },
+    ],
   },
   { timestamps: true }
 );

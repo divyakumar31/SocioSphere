@@ -3,6 +3,9 @@ import { Post } from "../models/post.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import { getClientSocketId } from "../socket/socket.js";
+import { User } from "../models/user.model.js";
+import { io } from "../app.js";
 
 /**
  * Add user comment for post.
@@ -40,6 +43,21 @@ const addComment = asyncHandler(async (req, res) => {
       path: "author",
       select: "username profilePicture",
     });
+
+    // Find post owner and set notification
+    const postOwner = await User.findById(post.author);
+    postOwner.notifications.push(
+      `${req.user.username} commented on your post.`
+    );
+
+    // Emit notification to post owner
+    const postOwnerSocketId = getClientSocketId(post.author);
+    if (postOwnerSocketId) {
+      io.to(postOwnerSocketId).emit(
+        "notification",
+        `${req.user.username} commented on your post.`
+      );
+    }
 
     return res
       .status(200)

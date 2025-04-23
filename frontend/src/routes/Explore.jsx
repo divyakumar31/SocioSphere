@@ -1,11 +1,11 @@
-import { CommentBox, ProfilePostImage } from "@/components";
+import { ProfilePostImage } from "@/components";
 import { useSelector } from "react-redux";
 
 const Explore = () => {
   const { post } = useSelector((state) => state.post);
   const { user } = useSelector((state) => state.user);
   return (
-    <div className="p-4 xsm:p-2 overflow-scroll scrollbar-none h-screen w-full">
+    <div className="p-2 xsm:p-4 overflow-scroll scrollbar-none h-screen w-full">
       {post.length !== 0 ? (
         <>
           <div className="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">

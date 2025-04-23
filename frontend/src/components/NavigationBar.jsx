@@ -1,5 +1,9 @@
 import { logoutUserApi } from "@/api";
+import { removeChat } from "@/features/chatSlice";
+import { removePosts } from "@/features/postSlice";
 import { removeUser } from "@/features/userSlice";
+import { closeSocket } from "@/lib/socket";
+import { Create } from "@/routes";
 import {
   CompassIcon,
   HeartIcon,
@@ -8,19 +12,13 @@ import {
   LogOutIcon,
   MessageCircleMoreIcon,
   SearchIcon,
-  SettingsIcon,
   SquarePlusIcon,
 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
-import { CreatePost } from ".";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Create } from "@/routes";
-import { removePosts } from "@/features/postSlice";
-import { removeChat } from "@/features/chatSlice";
-import { closeSocket } from "@/lib/socket";
 
 const navItems = [
   {
@@ -49,7 +47,10 @@ const navItems = [
   {
     name: "Notifications",
     path: "/notification",
-    icon: [<HeartIcon />, <HeartIcon fill="red" strokeWidth={2.5} />],
+    icon: [
+      <HeartIcon />,
+      <HeartIcon fill="red" strokeWidth={2.5} stroke="red" />,
+    ],
   },
   {
     name: "Create",
@@ -66,7 +67,6 @@ const navItems = [
       </Avatar>
     ),
   },
-
   {
     name: "Logout",
     path: "/logout",

@@ -53,6 +53,10 @@ const searchUserApi = (query) => {
   return apiClient.get(`/user/search?query=${query}`);
 };
 
+const seenNotificationsApi = () => {
+  return apiClient.post(`/user/notifications`, {});
+};
+
 // POST APIs
 const addPostApi = (data, postImage) => {
   const formData = new FormData();
@@ -129,6 +133,7 @@ export {
   registerUserApi,
   savePostApi,
   searchUserApi,
+  seenNotificationsApi,
   sendMessageApi,
   updateUserApi,
 };

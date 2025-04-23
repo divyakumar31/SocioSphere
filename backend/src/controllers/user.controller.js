@@ -1,8 +1,10 @@
 import { User } from "../models/user.model.js";
+import { getClientSocketId } from "../socket/socket.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { io } from "../app.js";
 
 /**
  * Sign up a user and generates an access token.
@@ -292,6 +294,20 @@ const followOrUnfollowUser = asyncHandler(async (req, res) => {
     } else {
       userToFollow.followers.push(user._id);
       user.following.push(userToFollow._id);
+
+      // Set notification to userToFollow
+      userToFollow.notifications.push(
+        `${user.username} started following you.`
+      );
+
+      // Send notification to userToFollow
+      const userToFollowSocket = getClientSocketId(userToFollow._id);
+      if (userToFollowSocket) {
+        io.to(userToFollowSocket).emit("notification", {
+          message: `${user.username} started following you.`,
+        });
+      }
+
       await userToFollow.save({ validateBeforeSave: false });
       await user.save({ validateBeforeSave: false });
       return res
@@ -341,13 +357,41 @@ const searchUsers = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * Marks all notifications as seen by the user.
+ * @route POST /api/v1/user/notifications
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {String} - Success Message.
+ * @throws {ApiError} - If unable to mark notifications as seen.
+ */
+const seenUserNotifications = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    user.notifications = [];
+
+    await user.save();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Notifications updated successfully"));
+  } catch (error) {
+    throw new ApiError(
+      500,
+      error.message || "Error while removing user notifications"
+    );
+  }
+});
+
 export {
   createUser,
   followOrUnfollowUser,
   getUserProfile,
   loginUser,
   logoutUser,
+  searchUsers,
+  seenUserNotifications,
   suggestUser,
   updateProfile,
-  searchUsers,
 };

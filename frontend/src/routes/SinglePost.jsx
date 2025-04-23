@@ -32,7 +32,6 @@ const SinglePost = () => {
   const { id } = useParams();
   // const { currentPost } = useSelector((state) => state.post);
   const [currentPost, setCurrentPost] = useState(null);
-  console.log(`States id: ${id}, currentPost: ${currentPost}`);
 
   const { user } = useSelector((state) => state.user);
   const [liked, setLiked] = useState(currentPost?.likes?.includes(user._id));
@@ -45,7 +44,6 @@ const SinglePost = () => {
     try {
       if (currentPost?._id !== id) {
         const res = await getSinglePostApi(id);
-        console.log("response: ", res.data);
 
         if (res.data.success) {
           toast.success(res.data.message);
@@ -60,9 +58,6 @@ const SinglePost = () => {
     }
   };
   useEffect(() => {
-    console.log("Id: ", id);
-    console.log("currentPost: ", currentPost);
-
     getCurrentPost();
   }, [id, currentPost]);
 
@@ -127,7 +122,7 @@ const SinglePost = () => {
       if (res.data.success) {
         dispatch(addComment({ postId: id, comment: res.data.data }));
         dispatch(setCurrentPost(id));
-        console.log(res.data.data);
+
         toast.success(res.data.message);
         setUserComment("");
       }

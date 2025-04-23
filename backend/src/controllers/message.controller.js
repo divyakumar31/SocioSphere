@@ -20,9 +20,6 @@ const sendMessage = asyncHandler(async (req, res) => {
     const { text } = req.body;
     const senderId = req.user._id;
 
-    console.log("Sender ID: ", senderId);
-    console.log("recev ID: ", receiverId);
-
     if (!text) {
       throw new ApiError(400, "All fields are required");
     }

@@ -51,12 +51,11 @@ const addComment = asyncHandler(async (req, res) => {
     );
 
     // Emit notification to post owner
-    const postOwnerSocketId = getClientSocketId(post.author);
+    const postOwnerSocketId = getClientSocketId(postOwner._id);
     if (postOwnerSocketId) {
-      io.to(postOwnerSocketId).emit(
-        "notification",
-        `${req.user.username} commented on your post.`
-      );
+      io.to(postOwnerSocketId).emit("notification", {
+        message: `${req.user.username} commented on your post.`,
+      });
     }
 
     return res

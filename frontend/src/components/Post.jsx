@@ -112,7 +112,6 @@ const Post = ({ post }) => {
       if (res.data.success) {
         dispatch(addComment({ postId: post._id, comment: res.data.data }));
         setPostComments(postComments + 1);
-        console.log(res.data.data);
         toast.success(res.data.message);
         setUserComment("");
       }
@@ -127,7 +126,6 @@ const Post = ({ post }) => {
     try {
       const res = await deletePostApi(postId);
       if (res.data.success) {
-        console.log(res.data);
         dispatch(deletePost(postId));
         toast.success(res.data.message);
       }

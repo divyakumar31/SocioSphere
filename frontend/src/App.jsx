@@ -11,6 +11,7 @@ import {
 import { ScrollToTop } from "./components";
 import { Dialog, DialogContent } from "./components/ui/dialog";
 import { setOnlineUsers } from "./features/chatSlice";
+import { addUser } from "./features/userSlice";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import { closeSocket, initializeSocket } from "./lib/socket";
 import {
@@ -41,8 +42,16 @@ const App = () => {
       socketio.on("onlineUsers", (onlineUsers) => {
         dispatch(setOnlineUsers(onlineUsers));
       });
+      socketio?.on("notification", (data) => {
+        const updatedUser = {
+          ...user,
+          notifications: [data, ...user.notifications],
+        };
+        dispatch(addUser(updatedUser));
+      });
       return () => {
         closeSocket();
+        socketio?.off("notification");
       };
     }
   }, [user, dispatch]);

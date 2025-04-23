@@ -369,9 +369,10 @@ const seenUserNotifications = asyncHandler(async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
 
-    user.notifications = [];
-
-    await user.save();
+    if (user.notifications.length !== 0) {
+      user.notifications = [];
+      await user.save();
+    }
 
     return res
       .status(200)

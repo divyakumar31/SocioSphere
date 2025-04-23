@@ -31,8 +31,6 @@ const ChatList = ({ id }) => {
       getChatList();
     }
     return () => {
-      console.log("Selected user removed");
-
       dispatch(setSelectedChat(null));
       document.title = `Social Circle`;
     };

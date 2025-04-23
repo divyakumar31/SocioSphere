@@ -21,11 +21,6 @@ const createPost = asyncHandler(async (req, res) => {
     const { caption } = req.body;
     const image = req.file;
     const authorId = req.user._id;
-
-    console.log("Author ID:", req.user._id);
-    console.log("IMG:", image);
-    console.log("CAPTION:", caption);
-
     if (!image) {
       throw new ApiError(400, "Image is required");
     }
@@ -333,7 +328,6 @@ const dislikePost = asyncHandler(async (req, res) => {
 const getSinglePost = asyncHandler(async (req, res) => {
   try {
     const { postId } = req.params;
-    console.log("PostId:", postId);
 
     const post = await Post.findById(postId)
       .populate({

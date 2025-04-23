@@ -38,7 +38,6 @@ const SuggestionsBar = () => {
     try {
       const res = await followUnfollowApi(id);
       if (res.data.success) {
-        console.log(res.data);
         let updatedUser;
         if (user.followers.includes(id)) {
           updatedUser = {

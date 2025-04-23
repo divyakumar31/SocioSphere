@@ -70,7 +70,6 @@ const CreatePost = ({ open, setOpen, handleMainDialog }) => {
   const processFiles = (file) => {
     let hasError = false;
     const fileTypeRegex = new RegExp(acceptedFileExtensions.join("|"), "i");
-    console.log(fileTypeRegex, "fileTypeRegex");
     if (!fileTypeRegex.test(file.name.split(".").pop())) {
       setError(`Only ${acceptedFileExtensions.join(", ")} files are allowed`);
       hasError = true;

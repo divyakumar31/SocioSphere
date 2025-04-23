@@ -76,7 +76,6 @@ const Profile = () => {
     try {
       const res = await followUnfollowApi(profileUser._id);
       if (res.data.success) {
-        console.log(res.data);
         let updatedUser;
         if (profileUser.followers.includes(user._id)) {
           setProfileUser({

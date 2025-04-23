@@ -1,16 +1,17 @@
 import { seenNotificationsApi } from "@/api";
+import { useNotification } from "@/hooks/useNotification";
 import { MessageCircleHeartIcon, ThumbsUpIcon, UserIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
 const Notification = () => {
   const { user } = useSelector((state) => state.user);
-
+  // useNotification();
   const seenNotifications = async () => {
     try {
       const res = await seenNotificationsApi();
       if (res.data.success) {
-        console.log(res.data);
+        // logic for updating store
       }
     } catch (error) {
       console.log(error);
@@ -18,7 +19,7 @@ const Notification = () => {
   };
 
   useEffect(() => {
-    document.title = `Notifications (${user?.notifications?.length})`;
+    document.title = `Notifications (${user?.notifications?.length || 0})`;
 
     return () => {
       document.title = `Social Circle`;
@@ -27,32 +28,32 @@ const Notification = () => {
   }, []);
 
   return (
-    <div className="p-2 xsm:p-4 overflow-scroll scrollbar-none h-screen w-full">
+    <div className="p-2 xsm:p-4 overflow-scroll scrollbar-none h-full w-full">
       <div className="flex flex-col w-full justify-center gap-4">
         {user?.notifications?.length === 0 && <p>No notifications</p>}
         {user?.notifications?.map((notification, index) => (
           <p
             key={index}
-            className="font-medium p-2 border rounded-lg flex gap-2 items-center"
+            className="font-medium p-2 border rounded-lg flex gap-2 items-center hover:bg-gray-100"
           >
             <span>
-              {notification.includes("liked") && (
+              {notification.message.includes("liked") && (
                 <ThumbsUpIcon
                   className="rounded-sm p-1 w-8 h-8"
                   stroke="blue"
                 />
               )}
-              {notification.includes("commented") && (
+              {notification.message.includes("commented") && (
                 <MessageCircleHeartIcon
                   className="rounded-sm p-1 w-8 h-8"
                   stroke="green"
                 />
               )}
-              {notification.includes("following") && (
+              {notification.message.includes("following") && (
                 <UserIcon className="rounded-sm p-1 w-8 h-8" stroke="red" />
               )}
             </span>
-            {notification}
+            {notification.message}
           </p>
         ))}
       </div>

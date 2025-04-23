@@ -32,7 +32,6 @@ const CommentBox = ({ userId }) => {
       if (res.data.success) {
         dispatch(addComment({ postId: post._id, comment: res.data.data }));
         dispatch(setCurrentPost(post._id));
-        console.log(res.data.data);
         toast.success(res.data.message);
         setUserComment("");
       }

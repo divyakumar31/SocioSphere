@@ -151,7 +151,7 @@ const Post = ({ post }) => {
           <Link to={`/${post.author.username}`}>
             <Avatar className={"w-12 h-12"}>
               <AvatarImage
-                src={post.author.profilePicture || "/assets/default_img.jpg"}
+                src={post.author.profilePicture || "../assets/default_img.jpg"}
                 className={"object-cover cursor-pointer"}
               />
               <AvatarFallback className={"cursor-pointer"}>SS</AvatarFallback>

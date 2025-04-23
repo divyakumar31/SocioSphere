@@ -63,7 +63,7 @@ const Signup = () => {
         <Link to="/">
           <img
             alt="Socio Sphere"
-            src="/assets/SocioSphere-dark-logo.png"
+            src="../assets/SocioSphere-dark-logo.png"
             className="mx-auto h-10 w-auto select-none"
           />
         </Link>

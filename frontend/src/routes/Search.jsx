@@ -62,17 +62,17 @@ const Search = () => {
           <div className="flex items-center gap-2 border-b p-2" key={user._id}>
             <Avatar className={"w-12 h-12"}>
               <AvatarImage
-                src={user?.profilePicture || "/assets/default_img.jpg"}
+                src={user?.profilePicture || "../assets/default_img.jpg"}
                 className={"object-cover cursor-pointer"}
               />
               <AvatarFallback>SS</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-              <Link to={`/${user.username}`} className="text-sm font-semibold">
-                {user?.name}
-              </Link>
-              <Link to={`/${user.username}`} className="text-xs text-gray-400">
+              <Link to={`/${user.username}`} className="text-sm font-medium">
                 {user?.username}
+              </Link>
+              <Link to={`/${user.username}`} className="text-xs text-gray-500">
+                {user?.name}
               </Link>
             </div>
           </div>

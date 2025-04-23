@@ -1,8 +1,12 @@
-import { followUnfollowApi, getUserProfileApi } from "@/api";
+import { followUnfollowApi, getUserProfileApi, logoutUserApi } from "@/api";
 import { ProfilePostImage } from "@/components";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { addUser } from "@/features/userSlice";
+import { removeChat } from "@/features/chatSlice";
+import { removePosts } from "@/features/postSlice";
+import { addUser, removeUser } from "@/features/userSlice";
+import { closeSocket } from "@/lib/socket";
+import { LogOutIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
@@ -49,6 +53,10 @@ const Profile = () => {
 
   useEffect(() => {
     getProfileUserDetails();
+
+    return () => {
+      document.title = "Social Circle";
+    };
   }, [username, user]);
 
   const handleShareProfile = () => {
@@ -98,6 +106,24 @@ const Profile = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      const res = await logoutUserApi();
+      if (res.data.success) {
+        toast.success(res.data.message);
+        dispatch(removeUser());
+        dispatch(removePosts());
+        dispatch(removeChat());
+        closeSocket();
+        navigate("/login");
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data.message || "Check your internet connection"
+      );
+    }
+  };
+
   const ProfileActions = () => {
     return (
       <>
@@ -121,6 +147,10 @@ const Profile = () => {
             >
               Share Profile
             </Button>
+            <LogOutIcon
+              className="cursor-pointer inline-block xsm:hidden"
+              onClick={handleLogout}
+            />
           </>
         ) : (
           <>
@@ -170,7 +200,7 @@ const Profile = () => {
             {/* Profile User Image */}
             <Avatar className={"w-24 h-24 xsm:w-40 xsm:h-40"}>
               <AvatarImage
-                src={profileUser.profilePicture || "/assets/default_img.jpg"}
+                src={profileUser.profilePicture || "../assets/default_img.jpg"}
                 alt={`${
                   profileUser.name || profileUser.username
                 }'s profile picture`}

@@ -72,7 +72,9 @@ const CommentBox = ({ userId }) => {
             <Link to={`/${post.author?.username}`}>
               <Avatar className={"w-8 h-8"}>
                 <AvatarImage
-                  src={post.author?.profilePicture || "/assets/default_img.jpg"}
+                  src={
+                    post.author?.profilePicture || "../assets/default_img.jpg"
+                  }
                   className={"object-cover cursor-pointer"}
                 />
                 <AvatarFallback>SS</AvatarFallback>
@@ -132,7 +134,7 @@ const CommentBox = ({ userId }) => {
                       <AvatarImage
                         src={
                           comment.author?.profilePicture ||
-                          "/assets/default_img.jpg"
+                          "../assets/default_img.jpg"
                         }
                         className={"object-cover cursor-pointer"}
                       />

@@ -20,6 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Create } from "@/routes";
 import { removePosts } from "@/features/postSlice";
 import { removeChat } from "@/features/chatSlice";
+import { closeSocket } from "@/lib/socket";
 
 const navItems = [
   {
@@ -65,11 +66,7 @@ const navItems = [
       </Avatar>
     ),
   },
-  {
-    name: "Settings",
-    path: "/setting",
-    icon: [<SettingsIcon />, <SettingsIcon strokeWidth={2.5} />],
-  },
+
   {
     name: "Logout",
     path: "/logout",
@@ -91,6 +88,7 @@ const NavigationBar = () => {
         dispatch(removeUser());
         dispatch(removePosts());
         dispatch(removeChat());
+        closeSocket();
         navigate("/login");
       }
     } catch (error) {
@@ -104,18 +102,10 @@ const NavigationBar = () => {
     e.preventDefault();
     if (item.name === "Logout") {
       handleLogout();
-    } else if (
-      item.name === "Profile" ||
-      item.name === "Home" ||
-      item.name === "Explore" ||
-      item.name === "Message" ||
-      item.name === "Search"
-    ) {
-      navigate(item.path);
     } else if (item.name === "Create") {
       setIsCreatePostModelOpen(true);
     } else {
-      console.log("Clicked", item);
+      navigate(item.path);
     }
   };
 
@@ -126,12 +116,12 @@ const NavigationBar = () => {
         {/* Logo */}
         <NavLink to="/">
           <img
-            src="/assets/SocioSphere-dark-logo.png"
+            src="../assets/SocioSphere-dark-logo.png"
             alt="SocioSphere LOGO"
             className="max-w-40 md:block hidden"
           />
           <img
-            src="/assets/dp.png"
+            src="../assets/dp.png"
             alt="SocioSphere LOGO"
             className="w-10 md:hidden block"
           />
@@ -156,7 +146,7 @@ const NavigationBar = () => {
                   <span className="w-full max-w-7">
                     {item.name === "Profile" &&
                       item.icon(
-                        user?.profilePicture || "/assets/default_img.jpg"
+                        user?.profilePicture || "../assets/default_img.jpg"
                       )}
                     {isActive ? item?.icon[1] : item?.icon[0]}
                   </span>
@@ -174,7 +164,7 @@ const NavigationBar = () => {
         <div className="flex items-center justify-between w-full p-2">
           <NavLink to="/">
             <img
-              src="/assets/SocioSphere-dark-logo.png"
+              src="../assets/SocioSphere-dark-logo.png"
               alt="SocioSphere LOGO"
               className="max-w-30 cursor-pointer"
             />
@@ -225,7 +215,7 @@ const NavigationBar = () => {
             onClick={(e) => handleClick(e, navItems[6])}
           >
             <AvatarImage
-              src={user?.profilePicture || "/assets/default_img.jpg"}
+              src={user?.profilePicture || "../assets/default_img.jpg"}
               alt={`${user?.name}'s profile picture`}
               className={"object-cover"}
             />

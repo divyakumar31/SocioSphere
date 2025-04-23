@@ -1,22 +1,17 @@
-import { MessageCircleMoreIcon, MoveLeftIcon, SendIcon } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useNavigation, useParams } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  setLastMessage,
-  setMessages,
-  setSelectedChat,
-} from "@/features/chatSlice";
-import { getMessagesApi, markMessageAsSeenApi, sendMessageApi } from "@/api";
-import toast from "react-hot-toast";
+import { getMessagesApi, sendMessageApi } from "@/api";
+import { setMessages } from "@/features/chatSlice";
 import { useRealTimeMessages } from "@/hooks/useRealTimeMessage";
+import { MoveLeftIcon, SendIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const Chats = () => {
   const { id } = useParams();
   const { user } = useSelector((state) => state.user);
   const { selectedChat, messages } = useSelector((state) => state.chat);
-  // const receiver = selectedChat?.participants?.find((p) => p._id !== user._id);
 
   const [textMessage, setTextMessage] = useState("");
   const messageContainerRef = useRef(null);
@@ -31,16 +26,6 @@ const Chats = () => {
       const res = await sendMessageApi(selectedChat?._id, textMessage);
       if (res.data.success) {
         dispatch(setMessages([...messages, res.data.data]));
-        // dispatch(
-        //   setLastMessage({
-        //     chatId: selectedChat._id,
-        //     message: {
-        //       _id: res.data.data._id,
-        //       message: res.data.data.message,
-        //       createdAt: res.data.data.createdAt,
-        //     },
-        //   })
-        // );
         setTextMessage("");
       }
     } catch (error) {
@@ -50,17 +35,8 @@ const Chats = () => {
     }
   };
 
-  // const seenMessages = async () => {
-  //   console.log("calling seen api");
-
-  //   const res = await markMessageAsSeenApi(selectedChat?._id);
-  //   if (res.data.success) {
-  //     toast.success(res.data.message);
-  //   }
-  // };
   useEffect(() => {
     const getMessages = async () => {
-      // dispatch(setSelectedChat(id));
       try {
         const res = await getMessagesApi(id);
         if (res.data.success) {
@@ -73,23 +49,8 @@ const Chats = () => {
       }
     };
 
-    // if (
-    //   id !== undefined
-    //   // !chatList.some((u) => u.participants.some((p) => p._id === id))
-    // ) {
-    //   toast.error(
-    //     "Chat not found at id undefined & selectedChat & id not equal"
-    //   );
-    //   // navigate("/404", { replace: true });
-    // }
     if (id) {
       getMessages();
-
-      // return () => {
-      //   if (selectedChat) {
-      //     seenMessages();
-      //   }
-      // };
     }
   }, [selectedChat, id]);
 

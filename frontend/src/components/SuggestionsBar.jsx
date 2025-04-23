@@ -68,7 +68,7 @@ const SuggestionsBar = () => {
           <Link to={`/${user?.username}`}>
             <Avatar className={"w-12 h-12"}>
               <AvatarImage
-                src={user.profilePicture || "/assets/default_img.jpg"}
+                src={user.profilePicture || "../assets/default_img.jpg"}
                 className={"object-cover cursor-pointer"}
               />
               <AvatarFallback>SS</AvatarFallback>
@@ -97,7 +97,8 @@ const SuggestionsBar = () => {
                     <Avatar className={"w-10 h-10"}>
                       <AvatarImage
                         src={
-                          suggestion.profilePicture || "/assets/default_img.jpg"
+                          suggestion.profilePicture ||
+                          "../assets/default_img.jpg"
                         }
                         className={"object-cover cursor-pointer"}
                       />

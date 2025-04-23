@@ -78,7 +78,7 @@ const EditProfile = () => {
                 src={
                   editedProfile.profilePicture ||
                   user?.profilePicture ||
-                  "/assets/default_img.jpg"
+                  "../assets/default_img.jpg"
                 }
                 alt={user.username}
                 className={"object-cover"}

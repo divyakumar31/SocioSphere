@@ -1,10 +1,8 @@
-import { getConversationsApi } from "@/api";
 import { setChatList, setSelectedChat } from "@/features/chatSlice";
 import { MoveLeftIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { CalculateTime } from ".";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const ChatList = ({ id }) => {
@@ -12,8 +10,8 @@ const ChatList = ({ id }) => {
   const { user, suggestedUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   useEffect(() => {
-    // dispatch(setChatList(suggestedUser));
     const getChatList = async () => {
       try {
         const userList = suggestedUser.filter((u) =>
@@ -24,15 +22,11 @@ const ChatList = ({ id }) => {
         } else {
           dispatch(setChatList(userList));
         }
-        // const res = await getConversationsApi();
-        // if (res.data.success) {
-        //   console.log(res.data.data);
-        //   dispatch(setChatList(res.data.data));
-        // }
       } catch (error) {
         console.log(error);
       }
     };
+    document.title = `Chats | ${user.username}`;
     if (chatList.length === 0) {
       getChatList();
     }
@@ -40,6 +34,7 @@ const ChatList = ({ id }) => {
       console.log("Selected user removed");
 
       dispatch(setSelectedChat(null));
+      document.title = `Social Circle`;
     };
   }, [suggestedUser]);
 
@@ -85,9 +80,6 @@ const ChatList = ({ id }) => {
 
             <div className="flex flex-col relative">
               <p className="">{u?.username} </p>
-              {/* <p className="text-sm text-gray-400 w-40 truncate">
-                  <CalculateTime time={u?.createdAt} />
-                </p> */}
             </div>
           </Link>
         ))}

@@ -1,8 +1,15 @@
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const NotFound = () => {
   const navigate = useNavigate();
-  document.title = "404 Page Not Found";
+  useEffect(() => {
+    document.title = "404 Page Not Found";
+
+    return () => {
+      document.title = "Social Circle";
+    };
+  }, []);
   return (
     <>
       <div className="text-center place-content-center h-screen space-y-2 p-4">

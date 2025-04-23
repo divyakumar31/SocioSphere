@@ -162,47 +162,48 @@ const getChatList = asyncHandler(async (req, res) => {
  * @returns {Object} - Updated Message object.
  * @throws {ApiError} - If message marking fails.
  */
-const markMessageAsSeen = asyncHandler(async (req, res) => {
-  try {
-    const { conversationId } = req.params;
+// const markMessageAsSeen = asyncHandler(async (req, res) => {
+//   try {
+//     const { conversationId } = req.params;
 
-    mongoPathValidator(conversationId);
+//     mongoPathValidator(conversationId);
 
-    const conversation =
-      await Conversation.findById(conversationId).populate("messages");
+//     const conversation =
+//       await Conversation.findById(conversationId).populate("messages");
 
-    if (!conversation) {
-      throw new ApiError(404, "Conversation not found");
-    }
-    console.log("COnvo: ", conversation);
-    const unseenMessages = conversation.messages.filter(
-      (msg) => !msg.seen && msg.sender.toString() !== req.user._id.toString()
-    );
-    console.log("UnseenMsg: ", unseenMessages);
+//     if (!conversation) {
+//       throw new ApiError(404, "Conversation not found");
+//     }
+//     console.log("COnvo: ", conversation);
+//     const unseenMessages = conversation.messages.filter(
+//       (msg) => !msg.seen && msg.sender.toString() !== req.user._id.toString()
+//     );
+//     console.log("UnseenMsg: ", unseenMessages);
 
-    if (unseenMessages.length === 0) {
-      return res
-        .status(200)
-        .json(new ApiResponse(200, "All messages already seen"));
-    }
+//     if (unseenMessages.length === 0) {
+//       return res
+//         .status(200)
+//         .json(new ApiResponse(200, "All messages already seen"));
+//     }
 
-    const messageIds = unseenMessages.map((msg) => msg._id);
-    await Message.updateMany(
-      { _id: { $in: messageIds } },
-      { $set: { seen: true, seenAt: new Date() } }
-    );
+//     const messageIds = unseenMessages.map((msg) => msg._id);
+//     await Message.updateMany(
+//       { _id: { $in: messageIds } },
+//       { $set: { seen: true, seenAt: new Date() } }
+//     );
 
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(200, `${messageIds.length} messages marked as seen`)
-      );
-  } catch (error) {
-    console.log(error);
-    throw new ApiError(
-      error?.statusCode || 500,
-      error?.message || "Something went wrong while updating message status"
-    );
-  }
-});
-export { sendMessage, getMessages, getChatList, markMessageAsSeen };
+//     return res
+//       .status(200)
+//       .json(
+//         new ApiResponse(200, `${messageIds.length} messages marked as seen`)
+//       );
+//   } catch (error) {
+//     console.log(error);
+//     throw new ApiError(
+//       error?.statusCode || 500,
+//       error?.message || "Something went wrong while updating message status"
+//     );
+//   }
+// });
+
+export { sendMessage, getMessages, getChatList };

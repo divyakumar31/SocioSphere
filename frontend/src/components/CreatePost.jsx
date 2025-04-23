@@ -107,7 +107,7 @@ const CreatePost = ({ open, setOpen, handleMainDialog }) => {
             <Link to={`/${user?.username}`}>
               <Avatar className={"w-12 h-12"}>
                 <AvatarImage
-                  src={user?.profilePicture || "/assets/default_img.jpg"}
+                  src={user?.profilePicture || "../assets/default_img.jpg"}
                   className={"object-cover cursor-pointer"}
                 />
                 <AvatarFallback>SS</AvatarFallback>

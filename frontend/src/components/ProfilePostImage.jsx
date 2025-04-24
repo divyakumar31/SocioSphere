@@ -7,8 +7,6 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const ProfilePostImage = ({ post, userId }) => {
-  // TODO: Rename this component to PostImage
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [liked, setLiked] = useState(post.likes?.includes(userId));
@@ -39,7 +37,7 @@ const ProfilePostImage = ({ post, userId }) => {
 
   const handlePostClick = (e) => {
     e.stopPropagation();
-    dispatch(setCurrentPost(post._id));
+    dispatch(setCurrentPost(post));
     navigate(`/p/${post._id}`);
   };
   return (

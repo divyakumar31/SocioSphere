@@ -1,5 +1,4 @@
 import { seenNotificationsApi } from "@/api";
-import { useNotification } from "@/hooks/useNotification";
 import { MessageCircleHeartIcon, ThumbsUpIcon, UserIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";

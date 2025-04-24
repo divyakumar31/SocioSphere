@@ -1,5 +1,6 @@
 import { addPostApi } from "@/api";
-import { addPost } from "@/features/postSlice";
+import { addPosts } from "@/features/postSlice";
+import { addUser } from "@/features/userSlice";
 import { AvatarFallback } from "@radix-ui/react-avatar";
 import { Loader2Icon, XIcon } from "lucide-react";
 import { useRef, useState } from "react";
@@ -8,7 +9,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { Dialog, DialogContent, DialogOverlay, DialogTitle } from "./ui/dialog";
-import { addUser } from "@/features/userSlice";
 
 const CreatePost = ({ open, setOpen, handleMainDialog }) => {
   const dispatch = useDispatch();
@@ -18,6 +18,7 @@ const CreatePost = ({ open, setOpen, handleMainDialog }) => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useSelector((state) => state.user);
+  const { post } = useSelector((state) => state.post);
 
   const fileInputRef = useRef(null);
   const acceptedFileExtensions = ["jpg", "png", "jpeg"];
@@ -38,9 +39,9 @@ const CreatePost = ({ open, setOpen, handleMainDialog }) => {
       const res = await addPostApi(caption, selectedFile);
 
       if (res.data.success) {
-        dispatch(addPost(res.data.data));
-        // TODO: push post in user.post in userSlice
-        // user.posts.push(res.data.data._id);
+        const updatedPosts = [res.data.data, ...post];
+        dispatch(addPosts(updatedPosts));
+
         const updatedUser = {
           ...user,
           posts: [res.data.data._id, ...user.posts],

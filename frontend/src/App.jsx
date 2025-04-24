@@ -32,7 +32,6 @@ import {
 
 const App = () => {
   const { user } = useSelector((state) => state.user);
-
   const isOnline = useOnlineStatus();
   const dispatch = useDispatch();
 

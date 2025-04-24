@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const SuggestionsBar = () => {
-  // TODO: Set follow handler for suggestions.(Enable Follow button)
   const dispatch = useDispatch();
   const { user, suggestedUser } = useSelector((state) => state.user);
 
@@ -15,7 +14,6 @@ const SuggestionsBar = () => {
     try {
       const res = await getSuggestedUsersApi();
       if (res.data.success) {
-        toast.success(res.data.message);
         dispatch(addSuggestedUsers(res.data.data));
       }
     } catch (error) {
@@ -23,11 +21,12 @@ const SuggestionsBar = () => {
       toast.error(error.response?.data.message);
     }
   };
+
   useEffect(() => {
     if (suggestedUser.length === 0) {
       fetchUsers();
     }
-  }, [suggestedUser]);
+  }, []);
 
   // filter out users that the user is already following
   const suggestions = suggestedUser?.filter(
@@ -39,7 +38,7 @@ const SuggestionsBar = () => {
       const res = await followUnfollowApi(id);
       if (res.data.success) {
         let updatedUser;
-        if (user.followers.includes(id)) {
+        if (user.following.includes(id)) {
           updatedUser = {
             ...user,
             following: user.following.filter((fid) => fid !== id),

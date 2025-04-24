@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 
 const Profile = () => {
-  // TODO: Handle Action buttons, Change Saved posts as it currently shows user poss
   const { username } = useParams();
   const { user } = useSelector((state) => state.user);
   const userPosts = useSelector((state) => state.post.post);

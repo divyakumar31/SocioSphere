@@ -1,5 +1,13 @@
-import React, { useState } from "react";
+import { addCommentApi, deleteCommentApi } from "@/api";
+import { setComments, setCurrentPost } from "@/features/postSlice";
+import { Ellipsis } from "lucide-react";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { CalculateTime } from ".";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
 import {
   Dialog,
   DialogClose,
@@ -7,31 +15,32 @@ import {
   DialogOverlay,
   DialogTrigger,
 } from "./ui/dialog";
-import { Ellipsis } from "lucide-react";
-import { Button } from "./ui/button";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { CalculateTime } from ".";
-import { addCommentApi, deleteCommentApi } from "@/api";
-import { addComment, setComments, setCurrentPost } from "@/features/postSlice";
-import toast from "react-hot-toast";
 
 const CommentBox = ({ userId }) => {
-  const post = useSelector((state) => state.post.currentPost);
+  const { post, currentPost } = useSelector((state) => state.post);
   const [userComment, setUserComment] = useState("");
   const dispatch = useDispatch();
   const handleUserComment = (e) => {
     setUserComment(e.target.value);
   };
 
-  // To add Comment on post
+  // To add Comment on currentPost
   const submitUserComment = async (e) => {
     e.preventDefault();
     try {
-      const res = await addCommentApi(userComment, post._id);
+      const res = await addCommentApi(userComment, currentPost._id);
       if (res.data.success) {
-        dispatch(addComment({ postId: post._id, comment: res.data.data }));
-        dispatch(setCurrentPost(post._id));
+        const updatedPost = {
+          ...currentPost,
+          comments: [res.data.data, ...currentPost.comments],
+        };
+        dispatch(
+          setComments({
+            postId: currentPost._id,
+            comments: updatedPost.comments,
+          })
+        );
+        dispatch(setCurrentPost(updatedPost));
         toast.success(res.data.message);
         setUserComment("");
       }
@@ -44,11 +53,19 @@ const CommentBox = ({ userId }) => {
     try {
       const res = await deleteCommentApi(id);
       if (res.data.success) {
-        const updatedComments = post.comments.filter(
-          (comment) => comment._id !== id
+        const updatedPost = {
+          ...currentPost,
+          comments: currentPost.comments.filter(
+            (comment) => comment._id !== id
+          ),
+        };
+        dispatch(
+          setComments({
+            postId: currentPost._id,
+            comments: updatedPost.comments,
+          })
         );
-        dispatch(setComments({ postId: post._id, comments: updatedComments }));
-        dispatch(setCurrentPost(post._id));
+        dispatch(setCurrentPost(updatedPost));
         toast.success(res.data.message);
       }
     } catch (error) {
@@ -61,18 +78,19 @@ const CommentBox = ({ userId }) => {
     <>
       <div className="grid md:grid-cols-2 p-0 w-full gap-2 overflow-scroll scrollbar-none h-full max-h-96">
         <img
-          src={post.image}
-          alt={post.caption}
+          src={currentPost.image}
+          alt={currentPost.caption}
           className="w-full object-contain self-center hidden md:block"
         />
         <div className="p-2 h-96 relative flex flex-col">
-          {/* Post Author details  */}
+          {/* currentPost Author details  */}
           <div className="flex items-center gap-2">
-            <Link to={`/${post.author?.username}`}>
+            <Link to={`/${currentPost.author?.username}`}>
               <Avatar className={"w-8 h-8"}>
                 <AvatarImage
                   src={
-                    post.author?.profilePicture || "../assets/default_img.jpg"
+                    currentPost.author?.profilePicture ||
+                    "../assets/default_img.jpg"
                   }
                   className={"object-cover cursor-pointer"}
                 />
@@ -81,8 +99,8 @@ const CommentBox = ({ userId }) => {
             </Link>
             <div className="flex flex-auto">
               <h2 className="font-medium cursor-pointer">
-                <Link to={`/${post.author?.username}`}>
-                  {post.author?.username}
+                <Link to={`/${currentPost.author?.username}`}>
+                  {currentPost.author?.username}
                 </Link>
               </h2>
             </div>
@@ -92,12 +110,12 @@ const CommentBox = ({ userId }) => {
                 <Ellipsis className="cursor-pointer" />
               </DialogTrigger>
               <DialogContent className={"w-96"}>
-                {post.author?._id === userId ? (
+                {currentPost.author?._id === userId ? (
                   <Button
                     className={"text-red-500 cursor-pointer"}
                     variant={"ghost"}
                   >
-                    Delete Post
+                    Delete currentPost
                   </Button>
                 ) : (
                   <>
@@ -120,12 +138,12 @@ const CommentBox = ({ userId }) => {
             </Dialog>
           </div>
 
-          {/* Post caption  */}
-          <p className="text-sm border-b mb-2">{post.caption}</p>
+          {/* currentPost caption  */}
+          <p className="text-sm border-b mb-2">{currentPost.caption}</p>
 
           {/* Commentors details */}
           <div className="flex-1 overflow-scroll scrollbar-none pb-12">
-            {post.comments?.map((comment) => (
+            {currentPost.comments?.map((comment) => (
               <div key={comment._id} className="my-2">
                 <div className="flex items-center gap-2">
                   <Link to={`/${comment.author.username}`}>
@@ -195,7 +213,7 @@ const CommentBox = ({ userId }) => {
               </div>
             ))}
 
-            {post.comments?.length === 0 && (
+            {currentPost.comments?.length === 0 && (
               <p className="text-sm text-gray-600">No comments yet</p>
             )}
           </div>

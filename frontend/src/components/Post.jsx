@@ -11,8 +11,9 @@ import {
   likePost,
   setCurrentPost,
 } from "@/features/postSlice";
+import { addUser } from "@/features/userSlice";
 import { Bookmark, Ellipsis, Heart, MessageCircle, Send } from "lucide-react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -27,42 +28,36 @@ import {
   DialogOverlay,
   DialogTrigger,
 } from "./ui/dialog";
-import { addUser } from "@/features/userSlice";
 
-const Post = ({ post }) => {
-  // TODO: Check if user is follow then only show Unfollow otherwise show follow option on the side of username
+const Post = React.memo(({ postId }) => {
   const { user } = useSelector((state) => state.user);
+  const post = useSelector((state) =>
+    state.post.post.find((p) => p._id === postId)
+  );
   const dispatch = useDispatch();
-  const [liked, setLiked] = useState(false);
-  const [postLikes, setPostLikes] = useState(0);
-  const [postComments, setPostComments] = useState(0);
-  const [bookmarked, setBookmarked] = useState(false);
+  const postState = {
+    liked: post.likes?.includes(user._id) || false,
+    postLikes: post.likes?.length || 0,
+    postComments: post.comments?.length || 0,
+    bookmarked: user.savedPosts?.includes(post._id) || false,
+  };
   const [commentSection, setCommentSection] = useState(false);
   const [userComment, setUserComment] = useState("");
-
-  useEffect(() => {
-    setLiked(post.likes?.includes(user._id));
-    setPostLikes(post.likes.length);
-    setPostComments(post.comments.length);
-    setBookmarked(user.savedPosts?.includes(post._id));
-  }, [post]);
 
   // To like and dislike post
   const handleLike = async () => {
     try {
       const res = await likeDislikePostApi(
-        liked ? "dislike" : "like",
+        postState.liked ? "dislike" : "like",
         post._id
       );
       if (res.data.success) {
         dispatch(
-          liked
+          postState.liked
             ? dislikePost({ postId: post._id, userId: user._id })
             : likePost({ postId: post._id, userId: user._id })
         );
-        setPostLikes(liked ? postLikes - 1 : postLikes + 1);
       }
-      setLiked(!liked);
     } catch (error) {
       console.log(error);
       toast.error(
@@ -71,14 +66,12 @@ const Post = ({ post }) => {
     }
   };
 
-  // To add post in bookmarks TODO:
   const handleBookmark = async () => {
-    // TODO: completed it
     try {
       const res = await savePostApi(post._id);
       if (res.data.success) {
         let updatedUser;
-        if (bookmarked) {
+        if (postState.bookmarked) {
           updatedUser = {
             ...user,
             savedPosts: user.savedPosts.filter((id) => id !== post._id),
@@ -90,8 +83,6 @@ const Post = ({ post }) => {
           };
         }
         dispatch(addUser(updatedUser));
-        setBookmarked(!bookmarked);
-        toast.success(res.data.message);
       }
     } catch (error) {
       console.log(error);
@@ -110,10 +101,8 @@ const Post = ({ post }) => {
     try {
       const res = await addCommentApi(userComment, post._id);
       if (res.data.success) {
-        dispatch(addComment({ postId: post._id, comment: res.data.data }));
-        setPostComments(postComments + 1);
-        toast.success(res.data.message);
         setUserComment("");
+        dispatch(addComment({ postId: post._id, comment: res.data.data }));
       }
     } catch (error) {
       console.log(error);
@@ -146,10 +135,12 @@ const Post = ({ post }) => {
       <div className="max-w-lg w-full border-b border-b-gray-500 mb-2">
         {/* Profile Details */}
         <div className="flex items-center gap-2 w-full">
-          <Link to={`/${post.author.username}`}>
+          <Link to={`/${post?.author?.username}`}>
             <Avatar className={"w-12 h-12"}>
               <AvatarImage
-                src={post.author.profilePicture || "../assets/default_img.jpg"}
+                src={
+                  post?.author?.profilePicture || "../assets/default_img.jpg"
+                }
                 className={"object-cover cursor-pointer"}
               />
               <AvatarFallback className={"cursor-pointer"}>SS</AvatarFallback>
@@ -157,12 +148,12 @@ const Post = ({ post }) => {
           </Link>
           <div className="flex flex-auto items-center">
             <h2 className="font-semibold cursor-pointer mr-2">
-              <Link to={`/${post.author.username}`}>
-                {post.author.username}
+              <Link to={`/${post?.author?.username}`}>
+                {post?.author?.username}
               </Link>
             </h2>
             <p className="text-gray-400 text-sm">
-              <CalculateTime time={post.createdAt} />
+              <CalculateTime time={post?.createdAt} />
             </p>
           </div>
           <Dialog>
@@ -171,7 +162,7 @@ const Post = ({ post }) => {
               <Ellipsis className="cursor-pointer" />
             </DialogTrigger>
             <DialogContent className={"w-96"}>
-              {post.author._id === user._id ? (
+              {post?.author?._id === user._id ? (
                 <Button
                   className={"text-red-500 cursor-pointer"}
                   variant={"ghost"}
@@ -203,8 +194,8 @@ const Post = ({ post }) => {
 
         {/* Post Image Details */}
         <img
-          src={post.image}
-          alt={post.caption}
+          src={post?.image}
+          alt={post?.caption}
           onDoubleClick={handleLike}
           className="object-cover aspect-square mt-4 w-full"
         />
@@ -213,7 +204,7 @@ const Post = ({ post }) => {
         {/* Post Interaction */}
         <div className="flex items-center justify-between my-2 w-full">
           <div className="flex items-center gap-2">
-            {liked ? (
+            {postState.liked ? (
               <Heart
                 fill="red"
                 stroke="red"
@@ -233,7 +224,7 @@ const Post = ({ post }) => {
             <Send className="cursor-pointer" onClick={handlePostShare} />
           </div>
           <div>
-            {bookmarked ? (
+            {postState.bookmarked ? (
               <Bookmark
                 fill="black"
                 className="cursor-pointer"
@@ -245,7 +236,7 @@ const Post = ({ post }) => {
           </div>
         </div>
         <p className="text-gray-900 ">{post?.caption}</p>
-        <p className="font-medium">{postLikes} Likes</p>
+        <p className="font-medium">{postState.postLikes} Likes</p>
 
         {/* Add comment */}
         <div
@@ -255,7 +246,9 @@ const Post = ({ post }) => {
             setCommentSection(true);
           }}
         >
-          {postComments ? `View all ${postComments} comments` : ""}
+          {postState.postComments
+            ? `View all ${postState.postComments} comments`
+            : ""}
         </div>
         <div className="w-full">
           <form
@@ -294,6 +287,6 @@ const Post = ({ post }) => {
       </div>
     </>
   );
-};
+});
 
 export default Post;

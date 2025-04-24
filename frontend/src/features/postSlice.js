@@ -9,25 +9,17 @@ export const postSlice = createSlice({
   name: "post",
   initialState,
   reducers: {
-    addAllPosts: (state, action) => {
+    // Add Post Directly form the payload
+    addPosts: (state, action) => {
       state.post = action.payload;
     },
+
+    // Remove posts from the store
     removePosts: (state, _) => {
       state.post = [];
       state.currentPost = null;
     },
-    addPost: (state, action) => {
-      // state.post = [action.payload, ...state?.post];
-      state.post.unshift(action.payload);
-    },
-    addComment: (state, action) => {
-      const postToComment = state.post.find(
-        (p) => p._id === action.payload.postId
-      );
-      if (postToComment) {
-        postToComment.comments.unshift(action.payload.comment);
-      }
-    },
+
     setComments: (state, action) => {
       const postToComment = state.post.find(
         (p) => p._id === action.payload.postId
@@ -36,30 +28,36 @@ export const postSlice = createSlice({
         postToComment.comments = action.payload.comments;
       }
     },
+    // Delete Post from the store
     deletePost: (state, action) => {
       const index = state.post.findIndex((p) => p._id === action.payload);
       if (index !== -1) {
         state.post.splice(index, 1);
       }
     },
+
+    // Like post
     likePost: (state, action) => {
-      const postToLike = state.post.find(
-        (p) => p._id === action.payload.postId
+      state.post = state.post.map((p) =>
+        p._id === action.payload.postId &&
+        !p.likes.includes(action.payload.userId)
+          ? { ...p, likes: [action.payload.userId, ...p.likes] }
+          : p
       );
-      if (postToLike && !postToLike.likes.includes(action.payload.userId)) {
-        postToLike.likes.unshift(action.payload.userId); // Add the like to the beginning
-      }
     },
     dislikePost: (state, action) => {
-      const postToDislike = state.post.find(
-        (p) => p._id === action.payload.postId
+      state.post = state.post.map((p) =>
+        p._id === action.payload.postId &&
+        p.likes.includes(action.payload.userId)
+          ? {
+              ...p,
+              likes: p.likes.filter((like) => like !== action.payload.userId),
+            }
+          : p
       );
-      if (postToDislike) {
-        postToDislike.likes = postToDislike.likes.filter(
-          (like) => like !== action.payload.userId
-        );
-      }
     },
+
+    // SET Current post directly from the payload
     setCurrentPost: (state, action) => {
       state.currentPost = action.payload;
     },
@@ -67,10 +65,9 @@ export const postSlice = createSlice({
 });
 
 export const {
-  addAllPosts,
   setComments,
   removePosts,
-  addPost,
+  addPosts,
   addComment,
   deletePost,
   likePost,

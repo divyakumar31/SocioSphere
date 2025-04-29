@@ -5,15 +5,15 @@ import {
   savePostApi,
 } from "@/api";
 import {
-  addComment,
   deletePost,
   dislikePost,
   likePost,
+  setComments,
   setCurrentPost,
 } from "@/features/postSlice";
 import { addUser } from "@/features/userSlice";
 import { Bookmark, Ellipsis, Heart, MessageCircle, Send } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -102,7 +102,8 @@ const Post = React.memo(({ postId }) => {
       const res = await addCommentApi(userComment, post._id);
       if (res.data.success) {
         setUserComment("");
-        dispatch(addComment({ postId: post._id, comment: res.data.data }));
+        const updatedComments = [res.data.data, ...post.comments];
+        dispatch(setComments({ postId: post._id, comments: updatedComments }));
       }
     } catch (error) {
       console.log(error);

@@ -20,6 +20,7 @@ import {
   dislikePost,
   likePost,
   setComments,
+  setCurrentPost,
 } from "@/features/postSlice";
 import { addUser } from "@/features/userSlice";
 import { Bookmark, Ellipsis, Heart, MessageCircle, Send } from "lucide-react";
@@ -30,13 +31,18 @@ import { Link, useParams } from "react-router-dom";
 
 const SinglePost = () => {
   const { id } = useParams();
-  // const { currentPost } = useSelector((state) => state.post);
-  const [currentPost, setCurrentPost] = useState(null);
+  const { currentPost } = useSelector((state) => state.post);
+  // const [currentPost, setCurrentPost] = useState(null);
 
   const { user } = useSelector((state) => state.user);
-  const [liked, setLiked] = useState(currentPost?.likes?.includes(user._id));
-  const [postLikes, setPostLikes] = useState(currentPost?.likes?.length || 0);
-  const [bookmarked, setBookmarked] = useState(user.savedPosts?.includes(id));
+  const postState = {
+    liked: currentPost?.likes?.includes(user._id),
+    postLikes: currentPost?.likes?.length || 0,
+    bookmarked: user.savedPosts?.includes(id),
+  };
+  // const [liked, setLiked] = useState();
+  // const [postLikes, setPostLikes] = useState();
+  // const [bookmarked, setBookmarked] = useState();
   const [userComment, setUserComment] = useState("");
 
   const dispatch = useDispatch();
@@ -46,11 +52,11 @@ const SinglePost = () => {
         const res = await getSinglePostApi(id);
 
         if (res.data.success) {
-          toast.success(res.data.message);
-          setCurrentPost(res.data.data);
+          // toast.success(res.data.message);
+          dispatch(setCurrentPost(res.data.data));
         }
       } else {
-        toast.success("Post already loaded");
+        // toast.success("Post already loaded");
       }
     } catch (error) {
       console.log(error);
@@ -59,20 +65,28 @@ const SinglePost = () => {
   };
   useEffect(() => {
     getCurrentPost();
-  }, [id, currentPost]);
+  }, [id]);
 
   const handleLike = async () => {
     try {
-      const res = await likeDislikePostApi(liked ? "dislike" : "like", id);
+      const res = await likeDislikePostApi(
+        postState.liked ? "dislike" : "like",
+        id
+      );
       if (res.data.success) {
         dispatch(
-          liked
+          postState.liked
             ? dislikePost({ postId: id, userId: user._id })
             : likePost({ postId: id, userId: user._id })
         );
-        setPostLikes(liked ? postLikes - 1 : postLikes + 1);
+        const updatedPost = {
+          ...currentPost,
+          likes: postState.liked
+            ? currentPost.likes.filter((like) => like !== user._id)
+            : [user._id, ...currentPost.likes],
+        };
+        dispatch(setCurrentPost(updatedPost));
       }
-      setLiked(!liked);
     } catch (error) {
       console.log(error);
       toast.error(
@@ -87,7 +101,7 @@ const SinglePost = () => {
       const res = await savePostApi(id);
       if (res.data.success) {
         let updatedUser;
-        if (bookmarked) {
+        if (postState.bookmarked) {
           updatedUser = {
             ...user,
             savedPosts: user.savedPosts.filter((pid) => pid !== id),
@@ -99,7 +113,6 @@ const SinglePost = () => {
           };
         }
         dispatch(addUser(updatedUser));
-        setBookmarked(!bookmarked);
         toast.success(res.data.message);
       }
     } catch (error) {
@@ -120,8 +133,13 @@ const SinglePost = () => {
     try {
       const res = await addCommentApi(userComment, id);
       if (res.data.success) {
-        dispatch(addComment({ postId: id, comment: res.data.data }));
-        dispatch(setCurrentPost(id));
+        const updatedPost = {
+          ...currentPost,
+          comments: [res.data.data, ...currentPost.comments],
+        };
+        dispatch(setComments({ postId: id, comment: updatedPost.comments }));
+        dispatch(setCurrentPost(updatedPost));
+        // dispatch(setCurrentPost(id));
 
         toast.success(res.data.message);
         setUserComment("");
@@ -136,11 +154,14 @@ const SinglePost = () => {
     try {
       const res = await deleteCommentApi(commentId);
       if (res.data.success) {
-        const updatedComments = currentPost.comments.filter(
-          (comment) => comment._id !== commentId
-        );
-        dispatch(setComments({ postId: id, comments: updatedComments }));
-        dispatch(setCurrentPost(id));
+        const updatedPost = {
+          ...currentPost,
+          comments: currentPost.comments.filter(
+            (comment) => comment._id !== commentId
+          ),
+        };
+        dispatch(setComments({ postId: id, comments: updatedPost.comments }));
+        dispatch(setCurrentPost(updatedPost));
         toast.success(res.data.message);
       }
     } catch (error) {
@@ -223,7 +244,7 @@ const SinglePost = () => {
         />
         <div className="flex items-center justify-between my-2 w-full">
           <div className="flex items-center gap-2">
-            {liked ? (
+            {postState.liked ? (
               <Heart
                 fill="red"
                 stroke="red"
@@ -240,7 +261,7 @@ const SinglePost = () => {
             <Send className="cursor-pointer" onClick={handlePostShare} />
           </div>
           <div>
-            {bookmarked ? (
+            {postState.bookmarked ? (
               <Bookmark
                 fill="black"
                 className="cursor-pointer"
@@ -252,7 +273,7 @@ const SinglePost = () => {
           </div>
         </div>
         <p className="text-gray-900 ">{currentPost?.caption}</p>
-        <p className="font-medium">{postLikes} Likes</p>
+        <p className="font-medium">{postState.postLikes} Likes</p>
         {currentPost?.comments?.length > 0 && (
           <p
             className="text-sm text-gray-400 w-fit cursor-pointer md:hidden block"

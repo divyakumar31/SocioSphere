@@ -20,6 +20,7 @@ export const postSlice = createSlice({
       state.currentPost = null;
     },
 
+    // PostId and updated comments
     setComments: (state, action) => {
       const postToComment = state.post.find(
         (p) => p._id === action.payload.postId

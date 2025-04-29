@@ -7,14 +7,14 @@ import Post from "./Post";
 
 const PostFeed = () => {
   const dispatch = useDispatch();
-  const postIds = useSelector((state) => state.post.post.map((p) => p._id));
+  const posts = useSelector((state) => state.post.post);
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const res = await getAllPostsApi();
         if (res.data.success) {
           dispatch(addPosts(res.data.data));
-          toast.success(res.data.message);
+          // toast.success(res.data.message);
         }
       } catch (error) {
         console.log(error);
@@ -31,9 +31,9 @@ const PostFeed = () => {
   return (
     <>
       <div className="flex flex-col xsm:items-center gap-4 w-full">
-        {postIds?.length === 0 && <p>No posts found</p>}
-        {postIds?.map((p) => (
-          <Post key={p} postId={p} />
+        {posts?.length === 0 && <p>No posts found</p>}
+        {posts?.map((p) => (
+          <Post key={p._id} postId={p._id} />
         ))}
       </div>
     </>

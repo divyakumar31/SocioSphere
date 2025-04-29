@@ -6,10 +6,12 @@ import http from "http";
 import { Server } from "socket.io";
 import { getSocketConnection } from "./socket/socket.js";
 import { errorHandler } from "./utils/ApiError.js";
+import path from "path";
 
 dotenv.config({ path: "./.env" });
 
 const app = express();
+const __dirname = path.resolve();
 export const server = http.createServer(app);
 export const io = new Server(server, {
   cors: {
@@ -51,4 +53,7 @@ app.get("/api/v1/healthcheck", (_, res) => {
 });
 
 app.use(errorHandler);
+
+app.use(express.static(path.join(__dirname, "/frontend/dist")));
+app.get("*", (_, res) => res.sendFile(path.join(__dirname, "frontend", "dist", "index.html")));
 export default app;

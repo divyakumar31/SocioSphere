@@ -89,7 +89,7 @@ const App = () => {
                 element={<ProtectedRoute children={<EditProfile />} />}
               />
 
-              {/* Edit Profile */}
+              {/* Notification */}
               <Route
                 path="notification"
                 element={<ProtectedRoute children={<Notification />} />}

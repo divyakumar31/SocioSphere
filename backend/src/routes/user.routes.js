@@ -17,7 +17,7 @@ const router = Router();
 // To register and login/logout user
 router.route("/register").post(createUser);
 router.route("/login").post(loginUser);
-router.route("/logout").post(verifyJWT, logoutUser);
+router.route("/logout").post(logoutUser);
 
 // To update user profile
 router
